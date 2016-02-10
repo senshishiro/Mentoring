@@ -2,11 +2,18 @@
 //
 
 #include "stdafx.h"
+#include "model.h"
+//#include "controller.h"
+#include "view.h"
 #include <iostream>
 
 int main()
 {
-	std::cout << "check";
+	board grid_;
+	drawIntro();
+	drawGrid(grid_);
+
+	
     return 0;
 }
 

@@ -4,7 +4,8 @@
 
 //---------------------------------------
 #include "stdafx.h"
-#include <iostream>
+#include "view.h"
+
 //---------------------------------------
 
 using namespace std;
@@ -13,6 +14,7 @@ void drawLine()
 {
 	cout << "----------------------------------------\n";
 }
+
 
 //Draw intro
 void drawIntro()
@@ -24,6 +26,47 @@ void drawIntro()
 	drawLine();
 }
 
+
+void drawGrid(board grid)
+{
+	cout << "   | 1 | 2 | 3\n";
+	cout << "---+---+---+---\n";
+
+	for (int i = 0; i < 3; i++)
+	{
+		//Draw column number
+		cout << " " << i + 1 << " | ";
+
+		for (int j = 0; j < 3; j++)
+		{
+			cout << grid.gridArray[i][j];
+
+			//Draw empty space		
+			if (grid.gridArray[i][j] == "")
+			{
+				cout << " ";
+			}
+
+			if (j < 2)
+			{
+				cout << " | ";
+			}
+			else if (j == 2)
+			{
+				cout << endl;
+			}
+		}
+
+		//line between rows
+		if (i < 2)
+		{
+			cout << "---+---+---+---\n";
+		}
+	}
+}
+
+
+/*
 //Asks player if they want to go first
 bool turnOrder()
 {
@@ -90,3 +133,4 @@ bool setXO()
 
 	return true;
 }
+*/
