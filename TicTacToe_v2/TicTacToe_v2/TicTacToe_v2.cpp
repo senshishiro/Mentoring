@@ -9,10 +9,11 @@
 
 int main()
 {
-	board grid_;
-	drawIntro();
-	drawGrid(grid_);
+	gameboard grid_;
+	gridUI test;
+	//drawIntro();
 
+	test.drawGrid(grid_);
 	
     return 0;
 }

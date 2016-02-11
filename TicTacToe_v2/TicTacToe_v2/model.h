@@ -5,35 +5,43 @@
 #include <sstream>
 #include <vector>
 //---------------------------------------
+
+
+
+//---------------------------------------
+using namespace std;
 class turnInfo
 {
-	public:
+public:
 	//coords
-	int x,y;
+	int row,col;
 
 	//sign
-	std::string sign;
+	string sign;
 
-	bool setRow(int row)
-	{
-		if (row > 1 && row < 3)
-		{
-			x = row;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+	//setMove
 
+	bool setCoords(string input);
 
-
+private:
+	void split(string s, char delim, vector<string> &elems);
 };
 
-class board
+class gameboard
 {
-	public:
+public:
 	//Grid array
-	std::string gridArray[3][3];
+	string gridArray[3][3];
 };
+
+
+class gameState
+{
+public:
+	bool bExit = false;
+	bool bPlayAgain = true;
+	bool bFirstTurn = false;
+
+
+};
+

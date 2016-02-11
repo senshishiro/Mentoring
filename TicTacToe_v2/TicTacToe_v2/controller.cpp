@@ -5,6 +5,7 @@
 //---------------------------------------
 #include "stdafx.h"
 #include "controller.h"
+#include "model.h"
 //---------------------------------------
 
 using namespace std;
@@ -16,6 +17,9 @@ string getInput()
 	getline(cin, strInput);
 	return strInput;
 }
+
+
+
 
 //Validates player's move and updates grid
 bool updateGrid(string(*grid)[3][3], int x, int y, string playerSign)

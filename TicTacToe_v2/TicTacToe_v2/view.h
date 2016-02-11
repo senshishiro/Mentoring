@@ -4,7 +4,14 @@
 #include "model.h"
 
 
-void drawLine();
-void drawIntro();
-void drawGrid(board grid);
+//void drawLine();
+//void drawIntro();
+
+class gridUI 
+{
+
+public:
+	void drawGrid(gameboard grid);
+};
+
 

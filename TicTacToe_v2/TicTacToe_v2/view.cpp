@@ -10,24 +10,9 @@
 
 using namespace std;
 
-void drawLine()
-{
-	cout << "----------------------------------------\n";
-}
 
 
-//Draw intro
-void drawIntro()
-{
-	drawLine();
-	cout << "Tic Tac Toe\n";
-	cout << "Create a row of three to win\n";
-	cout << "Hit Q anytime when entering coordinates to quit.\n";
-	drawLine();
-}
-
-
-void drawGrid(board grid)
+void gridUI::drawGrid(gameboard grid)
 {
 	cout << "   | 1 | 2 | 3\n";
 	cout << "---+---+---+---\n";
@@ -67,6 +52,27 @@ void drawGrid(board grid)
 
 
 /*
+void drawLine()
+{
+	cout << "----------------------------------------\n";
+}
+
+//Draw intro
+void drawIntro()
+{
+	drawLine();
+	cout << "Tic Tac Toe\n";
+	cout << "Create a row of three to win\n";
+	cout << "Hit Q anytime when entering coordinates to quit.\n";
+	drawLine();
+}
+
+
+
+
+
+
+
 //Asks player if they want to go first
 bool turnOrder()
 {
