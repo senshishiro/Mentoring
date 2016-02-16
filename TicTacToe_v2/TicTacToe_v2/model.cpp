@@ -5,59 +5,193 @@
 //----------------------------------------------
 #include "stdafx.h"
 #include "model.h"
-
+#include "controller.h"
 
 using namespace std;
 
-
-bool turnInfo::setCoords(string userCoords)
+// Searches grid for a string
+matrix gridModel::searchGrid(gridModel grid, string str)
 {
-	int x, y;
-	vector<string> input;
-	split(userCoords, ' ', input);
+	matrix moves;
 
-	if (input.size() == 2 && (stringstream(input[0]) >> x) && (stringstream(input[1]) >> y))
+	for (int i = 0; i < 3; i++)
 	{
-		x = x - 1;
-		y = y - 1;
-
-		if ((x >= 0 && x < 3) && (y >= 0 && y < 3))
+		for (int k = 0; k < 3; k++)
 		{
-			row = x;
-			col = y;
-		}
-		else
-		{
-			cerr << "Please enter a valid row and column.\n";
+			if (grid.gridArray[i][k] == str)
+			{
+				moves.push_back({ i,k });
+			}
 		}
 	}
+	return moves;
 }
 
-
-//Function that converts strings to lowercase
-string toLowercase(string strText)
+//Check if there are empty spaces in the grid
+bool gridModel::isGridFull(gridModel grid, string str)
 {
-	int k = strText.length();
-	for (int i = 0 ; i < k ; i++)
+	if (searchGrid(grid, str).size() > 0)
 	{
-		strText[i] = tolower(strText[i]);
+
+		return false;
 	}
-
-	return strText;
-}
-
-
-//Splits string by delimiter. returns values in a vector
-void turnInfo::split(string s, char delim, vector<string> &elems)
-{
-	stringstream ss(s);
-	string item;
-	while (getline(ss, item, delim))
+	else
 	{
-		elems.push_back(item);
+		return true;
 	}
 }
 
-//grid
 
-//Turn
+//Check for win conditions and draw
+bool gridModel::checkWins(gridModel &gridInfo, turnModel playerInfo)
+{
+	bool bWin = false;
+	bool bEmpty = true;
+
+	string playerSign = playerInfo.sign;
+	int x = playerInfo.row;
+	int y = playerInfo.col;
+
+	cout <<"row:" << x << " col:" << y << endl;
+
+	// Checks Row for a win
+	if ((gridInfo.gridArray[x][0] == playerSign) && (gridInfo.gridArray[x][1] == playerSign) && (gridInfo.gridArray[x][2] == playerSign))
+	{
+		bWin = true;
+	}
+	// Checks Col for a win
+	else if ((gridInfo.gridArray[0][y] == playerSign) && (gridInfo.gridArray[1][y] == playerSign) && (gridInfo.gridArray[2][y] == playerSign))
+	{
+		bWin = true;
+	}
+	// Checks left Diag for a win
+	else if ((gridInfo.gridArray[0][0] == playerSign) && (gridInfo.gridArray[1][1] == playerSign) && (gridInfo.gridArray[2][2] == playerSign))
+	{
+		bWin = true;
+	}
+	// Checks right Diag for a win
+	else if ((gridInfo.gridArray[0][2] == playerSign) && (gridInfo.gridArray[1][1] == playerSign) && (gridInfo.gridArray[2][0] == playerSign))
+	{
+		bWin = true;
+	}
+
+	//Searches through the grid for empty spaces
+	gridInfo.isFull = isGridFull(gridInfo, "");
+
+	//Win
+	if (bWin)
+	{
+		return true;
+	}
+	//Draw
+	else if (!bWin && gridInfo.isFull)
+	{
+		cout << false << " " << gridInfo.isFull << endl;
+		return false;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+//Scans the row for two of the same mark and empty space
+bool gridModel::rowCheck(gridModel grid, string compMark, int row, vector<int> &Move)
+{
+	int count = 0;
+
+	vector<int> temp;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (grid.gridArray[row][i] == compMark)
+		{
+			count++;
+		}
+		else if (grid.gridArray[row][i] == "")
+		{
+			temp = { row, i };
+		}
+	}
+
+	// return the empty spot if there are two matches
+	if (count == 2 && !temp.empty())
+	{
+		Move = temp;
+		temp.clear();
+		count = 0;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//Scans the column of a grid 
+bool gridModel::colCheck(gridModel grid, string compMark, int col, vector<int> &Move)
+{
+	int count = 0;
+	vector<int> temp;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (grid.gridArray[i][col] == compMark)
+		{
+			count++;
+		}
+		else if (grid.gridArray[i][col] == "")
+		{
+			temp = { i, col };
+		}
+	}
+
+	// return the empty spot if there are two matches
+	if (count == 2 && !temp.empty())
+	{
+		Move = temp;
+		temp.clear();
+		count = 0;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// Scans the diagonals of the grid looking for two marks and an empty space
+bool gridModel::checkDiags(gridModel grid, matrix diags, string compMark, vector<int> &Move)
+{
+	int count = 0;
+	vector<int> temp;
+
+	for (int i = 0; i < 3; i++)
+	{
+		int x = diags[i][0];
+		int y = diags[i][1];
+
+		if (grid.gridArray[x][y] == compMark)
+		{
+			count++;
+		}
+		else if (grid.gridArray[x][y] == "")
+		{
+			temp = { x, y };
+		}
+	}
+
+	if (count == 2 && !temp.empty())
+	{
+		Move = temp;
+		temp.clear();
+		count = 0;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
