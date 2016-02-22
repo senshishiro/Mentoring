@@ -25,8 +25,6 @@ int TicTacToe(drawUI UI, bool &bEndGame)
 	bool bPlayAgain = false;
 	string winMessage = "";
 
-	comp.compInfo.winMessage = "You have been Defeated.Computer won!\n";
-
 	// Ask if player want to go first
 	bPlayerTurn = player.turnOrder();
 
@@ -68,31 +66,34 @@ int TicTacToe(drawUI UI, bool &bEndGame)
 				//Check for potential wins
 				if (comp.compBlockWins(gControl, comp.compInfo))
 				{
-					comp.compInfo.row = comp.bestMove[0];
-					comp.compInfo.col = comp.bestMove[1];
-					gControl.updateGrid(gControl.gridInfo, comp.compInfo);
+					comp.compInfo.OverrideMove();
+					//comp.compInfo.SetRow(comp.bestMove[0]);
+					//comp.compInfo.SetCol(comp.bestMove[1]);
+					//gControl.updateGrid(gControl.gridInfo, comp.compInfo);
 				}
 				// Block player wins
 				else if (comp.compBlockWins(gControl, player.playerInfo))
 				{
-					comp.compInfo.row = comp.bestMove[0];
-					comp.compInfo.col = comp.bestMove[1];
-					gControl.updateGrid(gControl.gridInfo, comp.compInfo);
+					comp.compInfo.OverrideMove();
+					//comp.compInfo.row = comp.bestMove[0];
+					//comp.compInfo.col = comp.bestMove[1];
+					//gControl.updateGrid(gControl.gridInfo, comp.compInfo);
 					
 				}
 				//Random move if there are no good moves
 				else
 				{
-					comp.compRandomTurn(gControl, comp.compInfo);
+					comp.compRandomTurn(gControl);
 				}
 			}
 			else
 			{
-				comp.compRandomTurn(gControl, comp.compInfo);
+				comp.compRandomTurn(gControl);
 			}
-			
+
+			gControl.updateGrid(gControl.gridInfo, comp.compInfo);
 			activePlayer = comp.compInfo;
-			winMessage = comp.compInfo.winMessage;
+			//winMessage = comp.compInfo.winMessage;
 			bPlayerTurn = true;
 		}
 
@@ -107,12 +108,12 @@ int TicTacToe(drawUI UI, bool &bEndGame)
 			//player or comp win 
 			if (bWin)
 			{
-				UI.draw(winMessage);
+				UI.draw(activePlayer.getWinMessage());
 				bEndGame = player.playAgain();
 				bQuit = true;
 			}
 			//draw
-			else if (!bWin && gControl.gridInfo.isFull)
+			else if (!bWin && gControl.isFull())
 			{
 				UI.draw(UI.game_draw);
 				bEndGame = player.playAgain();

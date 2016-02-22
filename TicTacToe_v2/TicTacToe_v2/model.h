@@ -28,11 +28,65 @@ public:
 
 class turnModel
 {
+private:
+	int row, col;
+	string sign;
+	
+protected:
+	string winMessage = "";
+	vector<int> prevTurn = { row, col };
+
+
+public:
+	//Set and get rows
+	void setRow(int x)
+	{
+		row = x;
+	}
+
+	int getRow()
+	{
+		return row;
+	}
+	//Set and get cols
+	void setCol(int y)
+	{
+		col = y;
+	}
+
+	int getCol()
+	{
+		return col;
+	}
+
+	//Set and get sign
+	void setSign(string s)
+	{
+		sign = s;
+	}
+	
+	string getSign()
+	{
+		return sign;
+	}
+
+	//Set and get win message
+	void SetWinMessage(string s)
+	{
+		winMessage = s;
+	}
+
+	string getWinMessage()
+	{
+		return winMessage;
+	}
+
+};
+
+class playerModel: public turnModel
+{
 public:
 
-	int row,col;
-	vector<int> prevTurn = { row, col };
-	string sign;
 	string winMessage = "Congratulations! You Won!.\n";
 
 	bool prevTurnExists()
@@ -44,8 +98,31 @@ public:
 	}
 };
 
+class compModel : public turnModel
+{
+	vector<int> bestMove;
+public:
+	
+	string winMessage = "You have been Defeated.Computer won!\n";
+
+	void SetBestMove(vector<int> temp)
+	{
+		bestMove = temp;
+	}
+
+	void OverrideMove()
+	{
+		setRow(bestMove[0]);
+		setCol(bestMove[1]);
+	}
+};
+
 class gridModel
 {
+private:
+	//Grid is full
+	bool bFull = false;
+
 public:
 	//Diagonals
 	const matrix right_Diagonals = { { 0, 0 },{ 1, 1 },{ 2, 2 } };
@@ -54,12 +131,21 @@ public:
 	//Grid Array
 	string gridArray[3][3];
 
-	//Grid is full
-	bool isFull = false;
+	/*
+	string (&getGrid())[3][3]
+	{
+		return gridArray[3][3];
+	}*/
+
+	bool isFull()
+	{
+		return bFull;
+	}
 
 	matrix searchGrid(gridModel grid, string str);
-	bool isGridFull(gridModel grid, string str);
+	void isGridFull(gridModel grid);
 	bool checkWins(gridModel &gridInfo, turnModel playerInfo);
+
 	bool rowCheck(gridModel grid, string compMark, int row, vector<int> &Move);
 	bool colCheck(gridModel grid, string compMark, int col, vector<int> &Move);
 	bool checkDiags(gridModel grid, matrix diags, string compMark, vector<int> &Move);

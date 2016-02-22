@@ -10,7 +10,7 @@
 using namespace std;
 
 //Find all open spots and randomly chooses one
-void compController::compRandomTurn(GridController &GridC, turnModel compInfo)
+void compController::compRandomTurn(GridController &GridC)
 {
 	vector<int> vecRow;
 	vector<int> vecCol;
@@ -24,19 +24,19 @@ void compController::compRandomTurn(GridController &GridC, turnModel compInfo)
 	//Create random number between 0 and the size of the vector
 	srand(time(NULL));
 	id = (rand() % emptyMoves.size());
-	compInfo.row = emptyMoves[id][0];
-	compInfo.col = emptyMoves[id][1];
+	compInfo.setRow(emptyMoves[id][0]);
+	compInfo.setCol(emptyMoves[id][1]);
 
-	GridC.updateGrid(GridC.gridInfo, compInfo);
+	//GridC.updateGrid(GridC.gridInfo, compInfo);
 }
 
 //Scan the whole grid for winning moves
-bool compController::compPotentialWins(GridController GridC, turnModel compInfo)
+bool compController::compPotentialWins(GridController GridC)
 {
 	vector<int> temp;
 	matrix right_Diagonal = GridC.gridInfo.right_Diagonals;
 	matrix left_Diagonal = GridC.gridInfo.left_Diagonals;
-	string compMark = compInfo.sign;
+	string compMark = compInfo.getSign();
 	gridModel gridM = GridC.gridInfo;
 
 	//scans all rows and columns
@@ -44,12 +44,12 @@ bool compController::compPotentialWins(GridController GridC, turnModel compInfo)
 	{
 		if (gridM.rowCheck(gridM, compMark,i, temp))
 		{
-			bestMove = temp;
+			compInfo.SetBestMove(temp);
 			return true;
 		}
 		else if (gridM.colCheck(gridM, compMark, i, temp))
 		{
-			bestMove = temp;
+			compInfo.SetBestMove(temp);
 			return true;
 		}
 	}
@@ -57,12 +57,12 @@ bool compController::compPotentialWins(GridController GridC, turnModel compInfo)
 	//Scans diagonals
 	if (gridM.checkDiags(gridM, right_Diagonal, compMark, temp))
 	{
-		bestMove = temp;
+		compInfo.SetBestMove(temp);
 		return true;
 	}
 	if (gridM.checkDiags(gridM, left_Diagonal, compMark, temp))
 	{
-		bestMove = temp;
+		compInfo.SetBestMove(temp);
 		return true;
 	}
 
@@ -74,9 +74,9 @@ bool compController::compPotentialWins(GridController GridC, turnModel compInfo)
 bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
 {
 	//player's previous turn
-	int x = playerInfo.row;
-	int y = playerInfo.col;
-	string playerMark = playerInfo.sign;
+	int x = playerInfo.getRow();
+	int y = playerInfo.getCol();
+	string playerMark = playerInfo.getSign();
 	matrix right_Diagonal = GridC.gridInfo.right_Diagonals;
 	matrix left_Diagonal = GridC.gridInfo.left_Diagonals;
 	gridModel gridM = GridC.gridInfo;
@@ -122,10 +122,12 @@ bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
 	//Randomly select a move from list of potential moves
 	if (potentialMoves.size() > 0)
 	{
+		vector<int>  randomMove;
 		int id;
 		srand(time(NULL));
 		id = (rand() % potentialMoves.size());
-		bestMove = { potentialMoves[id][0], potentialMoves[id][1] };
+		randomMove = { potentialMoves[id][0], potentialMoves[id][1] };
+		compInfo.SetBestMove(randomMove);
 
 		return true;
 	}
@@ -172,13 +174,13 @@ bool PlayerController::getMove(GridController GridControl, bool &bQuit)
 }
 
 // Coordinate validation and Sets the error message when invalid
-bool PlayerController::setCoords(GridController grid, string userCoords, string &err, bool &bQuit )
+bool PlayerController::setCoords(GridController gridC, string userCoords, string &err, bool &bQuit )
 {
 	int x, y;
 	errorStrings errors;
 	vector<string> input;
-
-
+	gridModel grid = gridC.gridInfo;
+	
 	split(userCoords, ' ', input);
 
 	if (input.size() == 2 && (stringstream(input[0]) >> x) && (stringstream(input[1]) >> y))
@@ -186,13 +188,15 @@ bool PlayerController::setCoords(GridController grid, string userCoords, string 
 		x = x - 1;
 		y = y - 1;
 
-		if ((x >= 0 && x < 3) && (y >= 0 && y < 3) && grid.gridInfo.gridArray[x][y].length() == 0)
+		if ((x >= 0 && x < 3) && (y >= 0 && y < 3) && grid.gridArray[x][y].length() == 0)
 		{
-			playerInfo.row = x;
-			playerInfo.col = y;
+			playerInfo.setRow(x);
+			playerInfo.setCol(y);
+
+			cout << playerInfo.getRow() << " " << playerInfo.getCol() << endl;
 			return true;
 		}
-		else if ((x >= 0 && x < 3) && (y >= 0 && y < 3) && grid.gridInfo.gridArray[x][y].length() > 0)
+		else if ((x >= 0 && x < 3) && (y >= 0 && y < 3) && grid.gridArray[x][y].length() > 0)
 		{
 			err = errors.invalid_occupiedSpace;
 			return false;
@@ -265,8 +269,8 @@ void PlayerController::setXO(compController &comp)
 		if (toLowercase(strInput) == "x")
 		{
 			exit = true;
-			playerInfo.sign = "X";
-			comp.compInfo.sign = "O";
+			playerInfo.setSign("X");
+			comp.compInfo.setSign("O");
 			ui.draw(ui.game_X);
 			ui.drawLine();
 			//return true;
@@ -274,8 +278,8 @@ void PlayerController::setXO(compController &comp)
 		else if (toLowercase(strInput) == "o")
 		{
 			exit = true;
-			playerInfo.sign = "O";
-			comp.compInfo.sign = "X";
+			playerInfo.setSign("O");
+			comp.compInfo.setSign("X");
 			ui.draw(ui.game_O);
 			ui.drawLine();
 			//return false;
@@ -288,6 +292,8 @@ void PlayerController::setXO(compController &comp)
 
 	//return true;
 }
+
+
 
 //Asks player if they want to exit
 bool PlayerController::playAgain()
@@ -319,12 +325,13 @@ bool PlayerController::playAgain()
 
 	return true;
 }
+
 //Validates player's move and updates grid
 bool GridController::updateGrid(gridModel &grid, turnModel playerTurn)
 {
-	int x = playerTurn.row;
-	int y = playerTurn.col;
-	string sign = playerTurn.sign;
+	int x = playerTurn.getRow();
+	int y = playerTurn.getCol();
+	string sign = playerTurn.getSign();
 	
 	if (grid.gridArray[x][y].length() == 0)
 	{

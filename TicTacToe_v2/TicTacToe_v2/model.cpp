@@ -28,16 +28,16 @@ matrix gridModel::searchGrid(gridModel grid, string str)
 }
 
 //Check if there are empty spaces in the grid
-bool gridModel::isGridFull(gridModel grid, string str)
+void gridModel::isGridFull(gridModel grid)
 {
+	string str = "";
 	if (searchGrid(grid, str).size() > 0)
 	{
-
-		return false;
+		bFull = false;
 	}
 	else
 	{
-		return true;
+		bFull = true;
 	}
 }
 
@@ -47,12 +47,11 @@ bool gridModel::checkWins(gridModel &gridInfo, turnModel playerInfo)
 {
 	bool bWin = false;
 	bool bEmpty = true;
+	
+	string playerSign = playerInfo.getSign();
+	int x = playerInfo.getRow();
+	int y = playerInfo.getCol();
 
-	string playerSign = playerInfo.sign;
-	int x = playerInfo.row;
-	int y = playerInfo.col;
-
-	cout <<"row:" << x << " col:" << y << endl;
 
 	// Checks Row for a win
 	if ((gridInfo.gridArray[x][0] == playerSign) && (gridInfo.gridArray[x][1] == playerSign) && (gridInfo.gridArray[x][2] == playerSign))
@@ -76,7 +75,7 @@ bool gridModel::checkWins(gridModel &gridInfo, turnModel playerInfo)
 	}
 
 	//Searches through the grid for empty spaces
-	gridInfo.isFull = isGridFull(gridInfo, "");
+	isGridFull(gridInfo);
 
 	//Win
 	if (bWin)
@@ -84,9 +83,8 @@ bool gridModel::checkWins(gridModel &gridInfo, turnModel playerInfo)
 		return true;
 	}
 	//Draw
-	else if (!bWin && gridInfo.isFull)
+	else if (!bWin && gridInfo.isFull())
 	{
-		cout << false << " " << gridInfo.isFull << endl;
 		return false;
 	}
 	else
