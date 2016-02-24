@@ -138,6 +138,36 @@ bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
 }
 
 
+void compController::compTurn(turnModel &activePlayer, GridController &gControl, playerModel playerInfo, bool &bQuit)
+{
+	if (playerInfo.prevTurnExists())
+	{
+		//Check for potential wins
+		if (compBlockWins(gControl, compInfo))
+		{
+			compInfo.OverrideMove();
+		}
+		// Block player wins
+		else if (compBlockWins(gControl, playerInfo))
+		{
+			compInfo.OverrideMove();
+		}
+		//Random move if there are no good moves
+		else
+		{
+			compRandomTurn(gControl);
+		}
+	}
+	else
+	{
+		compRandomTurn(gControl);
+	}
+
+	gControl.updateGrid(gControl.gridInfo, compInfo);
+	activePlayer = compInfo;
+	activePlayer.SetWinMessage(compInfo.winMessage);
+}
+
 //Splits string by delimiter. returns values in a vector
 void PlayerController::split(string s, char delim, vector<string> &elems)
 {
@@ -325,6 +355,20 @@ bool PlayerController::playAgain()
 
 	return true;
 }
+
+//Grabs player's input and updates the grid
+void PlayerController::playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit)
+{
+	//Get move
+	getMove(gControl, bQuit);
+
+	//Update grid and set the active player and winMessage
+	gControl.updateGrid(gControl.gridInfo, playerInfo);
+	activePlayer = playerInfo;
+	activePlayer.SetWinMessage(playerInfo.winMessage);
+}
+
+
 
 //Validates player's move and updates grid
 bool GridController::updateGrid(gridModel &grid, turnModel playerTurn)

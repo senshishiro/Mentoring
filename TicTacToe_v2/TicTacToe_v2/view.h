@@ -18,8 +18,8 @@ class drawUI
 public:
 	//strings for game
 	const string game_draw = "Draw! No moves left.\n";
-	const string game_playAgain = "Would you like to play again?";
-	const string game_goFirst = "Would you like to go first?[y/n]:";
+	const string game_playAgain = "Would you like to play again?: ";
+	const string game_goFirst = "Would you like to go first?[y/n]: ";
 	const string game_First = "You are going first.\n";
 	const string game_Second = "Computer is going first.\n";
 	const string game_end = "Thanks for Playing!\n";

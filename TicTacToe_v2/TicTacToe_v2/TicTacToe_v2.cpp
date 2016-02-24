@@ -46,13 +46,7 @@ int TicTacToe(drawUI UI, bool &bEndGame)
 			//Draw header
 			UI.draw(UI.game_playerTurn);
 
-			//Get move
-			player.getMove(gControl, bQuit);
-
-			//Update grid and set the active player and winMessage
-			gControl.updateGrid(gControl.gridInfo, player.playerInfo);		
-			activePlayer = player.playerInfo;
-			winMessage = player.playerInfo.winMessage;
+			player.playerTurn(activePlayer, gControl, bQuit);
 			bPlayerTurn = false;
 		}
 		//Comp Turn
@@ -61,39 +55,7 @@ int TicTacToe(drawUI UI, bool &bEndGame)
 			//Draw header
 			UI.draw(UI.game_compTurn);
 			
-			if (player.playerInfo.prevTurnExists())
-			{
-				//Check for potential wins
-				if (comp.compBlockWins(gControl, comp.compInfo))
-				{
-					comp.compInfo.OverrideMove();
-					//comp.compInfo.SetRow(comp.bestMove[0]);
-					//comp.compInfo.SetCol(comp.bestMove[1]);
-					//gControl.updateGrid(gControl.gridInfo, comp.compInfo);
-				}
-				// Block player wins
-				else if (comp.compBlockWins(gControl, player.playerInfo))
-				{
-					comp.compInfo.OverrideMove();
-					//comp.compInfo.row = comp.bestMove[0];
-					//comp.compInfo.col = comp.bestMove[1];
-					//gControl.updateGrid(gControl.gridInfo, comp.compInfo);
-					
-				}
-				//Random move if there are no good moves
-				else
-				{
-					comp.compRandomTurn(gControl);
-				}
-			}
-			else
-			{
-				comp.compRandomTurn(gControl);
-			}
-
-			gControl.updateGrid(gControl.gridInfo, comp.compInfo);
-			activePlayer = comp.compInfo;
-			//winMessage = comp.compInfo.winMessage;
+			comp.compTurn(activePlayer, gControl, player.playerInfo, bQuit);
 			bPlayerTurn = true;
 		}
 

@@ -56,7 +56,7 @@ class compController
 public:
 	compModel compInfo;
 	
-
+	void compTurn(turnModel &activePlayer, GridController &gControl, playerModel playerInfo, bool &bQuit);
 	void compRandomTurn(GridController &GridC);
 	bool compPotentialWins(GridController GridC);
 	bool compBlockWins(GridController GridC, turnModel playerInfo);
@@ -71,7 +71,7 @@ public:
 	string strUserInput;
 	errorStrings errors;
 
-	void playerTurn(GridController gControl, bool &bQuit);
+	void playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit);
 	bool getMove(GridController GridControl, bool &bQuit);
 	
 	bool turnOrder();

@@ -31,13 +31,16 @@ class turnModel
 private:
 	int row, col;
 	string sign;
+	string winMessage;
+
 	
 protected:
-	string winMessage = "";
+
 	vector<int> prevTurn = { row, col };
 
 
 public:
+	
 	//Set and get rows
 	void setRow(int x)
 	{
@@ -101,9 +104,10 @@ public:
 class compModel : public turnModel
 {
 	vector<int> bestMove;
-public:
 	
+public:
 	string winMessage = "You have been Defeated.Computer won!\n";
+
 
 	void SetBestMove(vector<int> temp)
 	{
