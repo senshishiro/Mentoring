@@ -145,7 +145,7 @@ public:
 	{
 		return bFull;
 	}
-
+	void gridReset();
 	matrix searchGrid(gridModel grid, string str);
 	void isGridFull(gridModel grid);
 	bool checkWins(gridModel &gridInfo, turnModel playerInfo);
@@ -156,14 +156,15 @@ public:
 
 };
 
-/*
-class gameState
+
+class gameModel
 {
 public:
-	bool bExit = false;
-	bool bPlayAgain = true;
-	bool bFirstTurn = false;
-};*/
+	bool bWin = false;
+	bool bQuit = false;
+	bool bPlayerTurn = true;
+	bool bPlayAgain = false;
+};
 
 
 

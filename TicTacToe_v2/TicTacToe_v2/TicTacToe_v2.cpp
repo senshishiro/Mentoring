@@ -9,100 +9,105 @@
 
 
 
-
-int TicTacToe(drawUI UI, bool &bEndGame)
+class GameController
 {
-
+public:
 	GridController gControl;
 	PlayerController player;
 	compController comp;
 	turnModel activePlayer;
-	
+	gameModel gameInfo;
+	/*
 	bool bWin = false;
 	bool bQuit = false;
-	bool bTest = false;
 	bool bPlayerTurn = true;
 	bool bPlayAgain = false;
-	string winMessage = "";
+	*/
 
-	// Ask if player want to go first
-	bPlayerTurn = player.turnOrder();
-
-	//Ask if player wants to be X or O
-	player.setXO(comp);
-
-	//Don't draw grid if the comp is going first
-	if (bPlayerTurn)
+	void game(drawUI UI, bool &bEndGame)
 	{
-		gControl.drawGrid();
-	}
-	
 
-	do 
-	{	
-		//Player's Turn
-		if (bPlayerTurn)
-		{
-			//Draw header
-			UI.draw(UI.game_playerTurn);
 
-			player.playerTurn(activePlayer, gControl, bQuit);
-			bPlayerTurn = false;
-		}
-		//Comp Turn
-		else
-		{
-			//Draw header
-			UI.draw(UI.game_compTurn);
-			
-			comp.compTurn(activePlayer, gControl, player.playerInfo, bQuit);
-			bPlayerTurn = true;
-		}
+		//Get input from player. First turn and X/O.
+		gameInfo.bPlayerTurn = player.playerSetup(comp);
 
-		
-		// Continue if player does not want to quit
-		if (!bQuit)
+		//Don't draw grid if the comp is going first
+		if (gameInfo.bPlayerTurn)
 		{
 			gControl.drawGrid();
-			bWin = gControl.checkWins(gControl.gridInfo, activePlayer);
-			UI.drawLine();
-
-			//player or comp win 
-			if (bWin)
-			{
-				UI.draw(activePlayer.getWinMessage());
-				bEndGame = player.playAgain();
-				bQuit = true;
-			}
-			//draw
-			else if (!bWin && gControl.isFull())
-			{
-				UI.draw(UI.game_draw);
-				bEndGame = player.playAgain();
-				bQuit = true;
-			}
 		}
-		else if (bQuit)
-		{
-			bEndGame = true;
-		}
+	
+		do 
+		{	
+			//Player's Turn
+			if (gameInfo.bPlayerTurn)
+			{
+				//Draw header
+				UI.draw(UI.game_playerTurn);
+				player.playerTurn(activePlayer, gControl, gameInfo.bQuit);
+				gameInfo.bPlayerTurn = false;
+			}
+			//Comp Turn
+			else
+			{
+				//Draw header
+				UI.draw(UI.game_compTurn);
+				comp.compTurn(activePlayer, gControl, player.playerInfo, gameInfo.bQuit);
+				gameInfo.bPlayerTurn = true;
+			}
 
-	} while (!bQuit);
+		
+			// Continue if player does not want to quit
+			if (!gameInfo.bQuit)
+			{
+				gControl.drawGrid();
+				gameInfo.bWin = gControl.checkWins(gControl.gridInfo, activePlayer);
+				UI.drawLine();
 
-    return 0;
-}
+				//player or comp win 
+				if (gameInfo.bWin)
+				{
+					UI.draw(activePlayer.getWinMessage());
+					bEndGame = player.playAgain();
+					gameInfo.bQuit = true;
+
+					if (!bEndGame)
+						gControl.gridInfo.gridReset();
+				}
+				//draw
+				else if (!gameInfo.bWin && gControl.isFull())
+				{
+					UI.draw(UI.game_draw);
+					bEndGame = player.playAgain();
+					gameInfo.bQuit = true;
+
+					if (!bEndGame)
+						gControl.gridInfo.gridReset();
+				}
+
+
+			}
+			else if (gameInfo.bQuit)
+			{
+				bEndGame = true;
+			}
+
+		} while (!gameInfo.bQuit);
+
+	}
+};
 
 
 int main()
 {
 	drawUI UI;
 	bool bEndGame = false;
-	
+	GameController TicTacToe;
 	UI.drawIntro();
 
 	do
 	{
-		TicTacToe(UI, bEndGame);
+		TicTacToe.game(UI, bEndGame);
 
 	} while (!bEndGame);
 

@@ -101,6 +101,7 @@ bool gridModel::rowCheck(gridModel grid, string compMark, int row, vector<int> &
 
 	vector<int> temp;
 
+	// scan rows for player mark and empty spaces
 	for (int i = 0; i < 3; i++)
 	{
 		if (grid.gridArray[row][i] == compMark)
@@ -193,3 +194,16 @@ bool gridModel::checkDiags(gridModel grid, matrix diags, string compMark, vector
 	}
 }
 
+// Searches grid for a string
+void gridModel::gridReset()
+{
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int k = 0; k < 3; k++)
+		{
+			gridArray[i][k] = "";
+
+		}
+	}
+}

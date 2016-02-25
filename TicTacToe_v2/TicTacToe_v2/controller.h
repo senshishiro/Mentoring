@@ -71,6 +71,18 @@ public:
 	string strUserInput;
 	errorStrings errors;
 
+	bool playerSetup(compController &comp)
+	{
+		bool firstMove;
+		// Ask if player want to go first
+		firstMove = turnOrder();
+
+		//Ask if player wants to be X or O
+		setXO(comp);
+
+		return firstMove;
+	}
+
 	void playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit);
 	bool getMove(GridController GridControl, bool &bQuit);
 	
