@@ -9,6 +9,10 @@
 
 using namespace std;
 
+//=========================================================================================
+//Grid Model Functions
+//=========================================================================================
+
 // Searches grid for a string
 matrix gridModel::searchGrid(gridModel grid, string str)
 {

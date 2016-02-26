@@ -14,6 +14,7 @@ using namespace std;
 typedef vector<int> coords;
 typedef vector<coords> matrix;
 
+//=========================================================================================
 // error strings
 class errorStrings
 {
@@ -25,19 +26,16 @@ public:
 	const string invalid_xo = "Please enter X or O.\n";
 };
 
-
+//=========================================================================================
+//turnModel - Contains turn coordinats and 
 class turnModel
 {
 private:
-	int row, col;
 	string sign;
 	string winMessage;
-
 	
 protected:
-
-	vector<int> prevTurn = { row, col };
-
+	int row, col;
 
 public:
 	
@@ -86,12 +84,16 @@ public:
 
 };
 
+//=========================================================================================
+
 class playerModel: public turnModel
 {
+	vector<int> prevTurn = { row, col };
 public:
 
 	string winMessage = "Congratulations! You Won!.\n";
 
+	//Check if previous turn exists
 	bool prevTurnExists()
 	{
 		if (prevTurn.size() > 0)
@@ -101,6 +103,8 @@ public:
 	}
 };
 
+//=========================================================================================
+
 class compModel : public turnModel
 {
 	vector<int> bestMove;
@@ -108,18 +112,21 @@ class compModel : public turnModel
 public:
 	string winMessage = "You have been Defeated.Computer won!\n";
 
-
+	//Sets Best Move
 	void SetBestMove(vector<int> temp)
 	{
 		bestMove = temp;
 	}
 
+	//Update ROw and Col with the best move
 	void OverrideMove()
 	{
 		setRow(bestMove[0]);
 		setCol(bestMove[1]);
 	}
 };
+
+//=========================================================================================
 
 class gridModel
 {
@@ -135,28 +142,25 @@ public:
 	//Grid Array
 	string gridArray[3][3];
 
-	/*
-	string (&getGrid())[3][3]
-	{
-		return gridArray[3][3];
-	}*/
-
 	bool isFull()
 	{
 		return bFull;
 	}
+
 	void gridReset();
 	matrix searchGrid(gridModel grid, string str);
 	void isGridFull(gridModel grid);
+	
+	//Check functions
 	bool checkWins(gridModel &gridInfo, turnModel playerInfo);
-
+	//
 	bool rowCheck(gridModel grid, string compMark, int row, vector<int> &Move);
 	bool colCheck(gridModel grid, string compMark, int col, vector<int> &Move);
 	bool checkDiags(gridModel grid, matrix diags, string compMark, vector<int> &Move);
 
 };
 
-
+//=========================================================================================
 class gameModel
 {
 public:
@@ -164,6 +168,15 @@ public:
 	bool bQuit = false;
 	bool bPlayerTurn = true;
 	bool bPlayAgain = false;
+
+
+	void resetModel()
+	{
+		bWin = false;
+		bQuit = false;
+		bPlayerTurn = true;
+		bPlayAgain = false;
+	}
 };
 
 

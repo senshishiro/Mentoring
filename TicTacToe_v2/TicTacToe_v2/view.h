@@ -30,13 +30,8 @@ public:
 	const string game_X = "You are X.\n";
 	const string game_O = "You are O.\n";
 
-
+	void draw(string s);
 	void errorOutput(string errStr);
 	void drawLine();
 	void drawIntro();
-
-	void draw(string s)
-	{
-		cout << s;
-	}
 };

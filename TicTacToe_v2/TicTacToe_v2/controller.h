@@ -9,15 +9,7 @@
 #include "model.h"
 #include "time.h"
 //---------------------------------------
-/*
-class Controller
-{
-public:
 
-
-
-};
-*/
 
 class GridController
 {
@@ -30,13 +22,6 @@ public:
 	{
 		gridV.drawGrid(gridInfo);
 	}
-	/*
-	string (&grid())
-	{
-		return gridInfo.getGrid();
-	}
-	*/
-	//bool slotOccupied(gridModel gridC, PlayerController player);
 
 	bool updateGrid(gridModel &gridInfo, turnModel playerTurn);
 
@@ -51,18 +36,21 @@ public:
 	}
 };
 
+//=========================================================================================
 class compController 
 {
 public:
 	compModel compInfo;
 	
 	void compTurn(turnModel &activePlayer, GridController &gControl, playerModel playerInfo, bool &bQuit);
+
+private:
 	void compRandomTurn(GridController &GridC);
 	bool compPotentialWins(GridController GridC);
 	bool compBlockWins(GridController GridC, turnModel playerInfo);
-
 };
 
+//=========================================================================================
 class PlayerController
 {
 public:
@@ -71,27 +59,25 @@ public:
 	string strUserInput;
 	errorStrings errors;
 
-	bool playerSetup(compController &comp)
-	{
-		bool firstMove;
-		// Ask if player want to go first
-		firstMove = turnOrder();
+	//Player Setup
+	bool playerSetup(compController &comp);
 
-		//Ask if player wants to be X or O
-		setXO(comp);
-
-		return firstMove;
-	}
-
-	void playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit);
-	bool getMove(GridController GridControl, bool &bQuit);
+	//PlayAgain
+	bool playAgain();
 	
+	//player turn
+	void playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit);
+
+private:
+	//Player Setup Functions
 	bool turnOrder();
 	void setXO(compController &comp);
-	bool playAgain();
-
-
-
+	
+	//Player Turn Functions
+	bool getMove(GridController GridControl, bool &bQuit);
+	bool setCoords(GridController GridControl, string input, string &err, bool &bQuit);
+	void split(string s, char delim, vector<string> &elems);
+	
 	//Converts input into a string
 	string getInput()
 	{
@@ -99,11 +85,6 @@ public:
 		getline(cin, strInput);
 		return strInput;
 	}
-
-
-private:
-	void split(string s, char delim, vector<string> &elems);
-	bool setCoords(GridController GridControl, string input, string &err, bool &bQuit);
 
 	//Function that converts strings to lowercase
 	string toLowercase(string strText)
@@ -116,5 +97,33 @@ private:
 
 		return strText;
 	}
+};
 
+//=========================================================================================
+class GameController
+{
+
+	//controllers
+	GridController gControl;
+	PlayerController player;
+	compController comp;
+
+	//Temp Player info
+	turnModel activePlayer;
+
+	//Game States
+	gameModel gameInfo;
+
+	//UI
+	drawUI UI;
+
+	// Get first turn and player mark info. Draw empty grid if player id going first.
+	void gameSetup();
+
+	// Ask player if they want to play again. Reset game settings if yes.
+	void gamePlayAgainSetup();
+
+public:
+
+	void gameStart();
 };

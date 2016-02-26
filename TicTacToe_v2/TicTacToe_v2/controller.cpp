@@ -9,6 +9,11 @@
 
 using namespace std;
 
+
+//=========================================================================================
+//Computer Controller Functions
+//=========================================================================================
+
 //Find all open spots and randomly chooses one
 void compController::compRandomTurn(GridController &GridC)
 {
@@ -24,10 +29,11 @@ void compController::compRandomTurn(GridController &GridC)
 	//Create random number between 0 and the size of the vector
 	srand(time(NULL));
 	id = (rand() % emptyMoves.size());
+	
+	//Update compInfo with move data
 	compInfo.setRow(emptyMoves[id][0]);
 	compInfo.setCol(emptyMoves[id][1]);
 
-	//GridC.updateGrid(GridC.gridInfo, compInfo);
 }
 
 //Scan the whole grid for winning moves
@@ -137,7 +143,7 @@ bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
 	}
 }
 
-
+// Comp Turn Logic - Check for possible wins and Potential Player wins. Random Move if there are none.
 void compController::compTurn(turnModel &activePlayer, GridController &gControl, playerModel playerInfo, bool &bQuit)
 {
 	if (playerInfo.prevTurnExists())
@@ -164,9 +170,17 @@ void compController::compTurn(turnModel &activePlayer, GridController &gControl,
 	}
 
 	gControl.updateGrid(gControl.gridInfo, compInfo);
+	//Store comp info into activePlayer
 	activePlayer = compInfo;
 	activePlayer.SetWinMessage(compInfo.winMessage);
 }
+
+
+
+//=========================================================================================
+//Player Controller Functions
+//=========================================================================================
+
 
 //Splits string by delimiter. returns values in a vector
 void PlayerController::split(string s, char delim, vector<string> &elems)
@@ -199,8 +213,6 @@ bool PlayerController::getMove(GridController GridControl, bool &bQuit)
 			ui.errorOutput(err);
 		}
 	} while (!bValidAnswer);
-
-	//cout << playerInfo.row << " " << playerInfo.col << endl;
 }
 
 // Coordinate validation and Sets the error message when invalid
@@ -222,8 +234,6 @@ bool PlayerController::setCoords(GridController gridC, string userCoords, string
 		{
 			playerInfo.setRow(x);
 			playerInfo.setCol(y);
-
-			cout << playerInfo.getRow() << " " << playerInfo.getCol() << endl;
 			return true;
 		}
 		else if ((x >= 0 && x < 3) && (y >= 0 && y < 3) && grid.gridArray[x][y].length() > 0)
@@ -250,6 +260,18 @@ bool PlayerController::setCoords(GridController gridC, string userCoords, string
 	}
 }
 
+//Player Setup. Ask if player wants to go first, and asks for sign
+bool PlayerController::playerSetup(compController &comp)
+{
+	bool firstMove;
+	// Ask if player want to go first
+	firstMove = turnOrder();
+
+	//Ask if player wants to be X or O
+	setXO(comp);
+
+	return firstMove;
+}
 
 
 //Asks player if they want to go first
@@ -296,31 +318,31 @@ void PlayerController::setXO(compController &comp)
 		ui.draw(ui.game_XO);
 		strInput = getInput();
 
+		//set player to X and Comp to O
 		if (toLowercase(strInput) == "x")
 		{
 			exit = true;
 			playerInfo.setSign("X");
 			comp.compInfo.setSign("O");
 			ui.draw(ui.game_X);
-			ui.drawLine();
-			//return true;
+			
 		}
+		//set player to O and Comp to X
 		else if (toLowercase(strInput) == "o")
 		{
 			exit = true;
 			playerInfo.setSign("O");
 			comp.compInfo.setSign("X");
 			ui.draw(ui.game_O);
-			ui.drawLine();
-			//return false;
 		}
 		else
 		{
 			ui.errorOutput(errors.invalid_xo);
 		}
+
+		ui.drawLine();
 	} while (!exit);
 
-	//return true;
 }
 
 
@@ -368,7 +390,9 @@ void PlayerController::playerTurn(turnModel &activePlayer, GridController &gCont
 	activePlayer.SetWinMessage(playerInfo.winMessage);
 }
 
-
+//=========================================================================================
+//Grid Controller Functions
+//=========================================================================================
 
 //Validates player's move and updates grid
 bool GridController::updateGrid(gridModel &grid, turnModel playerTurn)
@@ -387,5 +411,94 @@ bool GridController::updateGrid(gridModel &grid, turnModel playerTurn)
 		//cout << x << " " << y << endl;
 		return false;
 	}
+}
+
+
+//=========================================================================================
+//Game Controller Functions
+//=========================================================================================
+
+// Get first turn and player mark info. Draw empty grid if player id going first.
+void GameController::gameSetup()
+{
+	//Get input from player. First turn and X/O.
+	gameInfo.bPlayerTurn = player.playerSetup(comp);
+
+	//Don't draw grid if the comp is going first
+	if (gameInfo.bPlayerTurn)
+	{
+		gControl.drawGrid();
+	}
+}
+
+// Ask player if they want to play again. Reset game settings if yes.
+void GameController::gamePlayAgainSetup()
+{
+	gameInfo.bQuit = player.playAgain();
+
+	// If player wants to play again. Reset grid and Game info. Get info from player.
+	if (!gameInfo.bQuit)
+	{
+		gControl.gridInfo.gridReset();
+		gameInfo.resetModel();
+		gameSetup();
+	}
+}
+
+//Main Game Flow
+void GameController::gameStart()
+{
+	//Draw intro, and get player information
+	UI.drawIntro();
+	gameSetup();
+
+	do
+	{
+		//Player's Turn
+		if (gameInfo.bPlayerTurn)
+		{
+			//Draw header
+			UI.draw(UI.game_playerTurn);
+			player.playerTurn(activePlayer, gControl, gameInfo.bQuit);
+			gameInfo.bPlayerTurn = false;
+		}
+		//Comp Turn
+		else
+		{
+			//Draw header
+			UI.draw(UI.game_compTurn);
+			comp.compTurn(activePlayer, gControl, player.playerInfo, gameInfo.bQuit);
+			gameInfo.bPlayerTurn = true;
+		}
+
+		// Continue if player does not want to quit
+		if (!gameInfo.bQuit)
+		{
+			//Draw grid and check for wins
+			gControl.drawGrid();
+			gameInfo.bWin = gControl.checkWins(gControl.gridInfo, activePlayer);
+			UI.drawLine();
+
+			// Display win or draw message. Ask if player wants to play again.
+			//win
+			if (gameInfo.bWin)
+			{
+				UI.draw(activePlayer.getWinMessage());
+				gamePlayAgainSetup();
+
+			}
+			//Draw
+			else if (!gameInfo.bWin && gControl.isFull())
+			{
+				UI.draw(UI.game_draw);
+				gamePlayAgainSetup();
+			}
+		}
+
+	} while (!gameInfo.bQuit);
+
+	// Exit Message
+	UI.drawLine();
+	UI.draw(UI.game_end);
 }
 

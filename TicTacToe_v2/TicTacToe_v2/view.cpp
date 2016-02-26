@@ -50,6 +50,13 @@ void gridView::drawGrid(gridModel grid)
 	}
 }
 
+
+//Draw text
+void drawUI::draw(string s)
+{
+	cout << s;
+}
+
 //Draws errors
 void drawUI::errorOutput(string errStr)
 {
