@@ -36,7 +36,7 @@ private:
 	
 protected:
 	int row, col;
-
+	vector<int> prevTurn = { row, col };
 public:
 	
 	//Set and get rows
@@ -88,7 +88,7 @@ public:
 
 class playerModel: public turnModel
 {
-	vector<int> prevTurn = { row, col };
+
 public:
 
 	string winMessage = "Congratulations! You Won!.\n";
