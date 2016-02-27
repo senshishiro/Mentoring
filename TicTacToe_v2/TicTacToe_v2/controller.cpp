@@ -149,7 +149,7 @@ void compController::compTurn(turnModel &activePlayer, GridController &gControl,
 	if (playerInfo.prevTurnExists())
 	{
 		//Check for potential wins
-		if (compBlockWins(gControl, compInfo))
+		if (compPotentialWins(gControl, compInfo))
 		{
 			compInfo.OverrideMove();
 		}
