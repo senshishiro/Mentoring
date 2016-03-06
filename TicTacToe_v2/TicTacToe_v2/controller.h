@@ -15,63 +15,50 @@ class GridController
 {
 
 public:
-	gridModel gridInfo;
-	gridView gridV;
+	GridModel gridInfo;
+	GridView gridV;
 
-	void drawGrid()
-	{
-		gridV.drawGrid(gridInfo);
-	}
-
-	bool updateGrid(gridModel &gridInfo, turnModel playerTurn);
-
-	bool checkWins(gridModel &gridInfo, turnModel playerTurn)
-	{
-		return gridInfo.checkWins(gridInfo, playerTurn);
-	}
-
-	bool isFull()
-	{
-		return gridInfo.isFull();
-	}
+	void drawGrid();
+	bool updateGrid(GridModel &gridInfo, TurnModel playerTurn);
+	bool checkWins(GridModel &gridInfo, TurnModel playerTurn);
+	bool isFull();
 };
 
 //=========================================================================================
-class compController 
+class CompController 
 {
 public:
-	compModel compInfo;
-	
-	void compTurn(turnModel &activePlayer, GridController &gControl, playerModel playerInfo, bool &bQuit);
+	CompModel compInfo;
+	void compTurn(TurnModel &activePlayer, GridController &gControl, PlayerModel playerInfo, bool &bQuit);
 
 private:
 	void compRandomTurn(GridController &GridC);
 	bool compPotentialWins(GridController GridC);
-	bool compBlockWins(GridController GridC, turnModel playerInfo);
+	bool compBlockWins(GridController GridC, TurnModel playerInfo);
 };
 
 //=========================================================================================
 class PlayerController
 {
 public:
-	playerModel playerInfo;
-	drawUI ui;
+	PlayerModel playerInfo;
+	DrawUI ui;
 	string strUserInput;
 	errorStrings errors;
 
 	//Player Setup
-	bool playerSetup(compController &comp);
+	bool playerSetup(CompController &comp);
 
 	//PlayAgain
 	bool playAgain();
 	
 	//player turn
-	void playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit);
+	void playerTurn(TurnModel &activePlayer, GridController &gControl, bool &bQuit);
 
 private:
 	//Player Setup Functions
 	bool turnOrder();
-	void setXO(compController &comp);
+	void setXO(CompController &comp);
 	
 	//Player Turn Functions
 	bool getMove(GridController GridControl, bool &bQuit);
@@ -79,43 +66,29 @@ private:
 	void split(string s, char delim, vector<string> &elems);
 	
 	//Converts input into a string
-	string getInput()
-	{
-		string strInput;
-		getline(cin, strInput);
-		return strInput;
-	}
+	string getInput();
 
 	//Function that converts strings to lowercase
-	string toLowercase(string strText)
-	{
-		int k = strText.length();
-		for (int i = 0; i < k; i++)
-		{
-			strText[i] = tolower(strText[i]);
-		}
-
-		return strText;
-	}
+	string toLowercase(string strText);
 };
 
 //=========================================================================================
 class GameController
 {
-
+private:
 	//controllers
 	GridController gControl;
 	PlayerController player;
-	compController comp;
+	CompController comp;
 
 	//Temp Player info
-	turnModel activePlayer;
+	TurnModel activePlayer;
 
 	//Game States
-	gameModel gameInfo;
+	GameModel gameInfo;
 
 	//UI
-	drawUI UI;
+	DrawUI UI;
 
 	// Get first turn and player mark info. Draw empty grid if player id going first.
 	void gameSetup();

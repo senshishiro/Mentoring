@@ -9,12 +9,116 @@
 
 using namespace std;
 
+
+//=========================================================================================
+//Turn Model Functions
+//=========================================================================================
+
+//Set and get rows
+void TurnModel::setRow(int x)
+{
+	row = x;
+}
+
+int TurnModel::getRow()
+{
+	return row;
+}
+//Set and get cols
+void TurnModel::setCol(int y)
+{
+	col = y;
+}
+
+int TurnModel::getCol()
+{
+	return col;
+}
+
+//Set and get sign
+void TurnModel::setSign(string s)
+{
+	sign = s;
+}
+
+string TurnModel::getSign()
+{
+	return sign;
+}
+
+//Set and get win message
+void TurnModel::setWinMessage(string s)
+{
+	winMessage = s;
+}
+
+string TurnModel::getWinMessage()
+{
+	return winMessage;
+}
+
+
+//=========================================================================================
+//Player Model Functions
+//=========================================================================================
+
+//Comp Constructor. Set up win Message.
+PlayerModel::PlayerModel()
+{
+	winMessage = "Congratulations! You Won!.\n";
+}
+
+//Check if previous turn exists
+bool PlayerModel::prevTurnExists()
+{
+	if (prevTurn.size() > 0)
+		return true;
+	else
+		return false;
+}
+
+//=========================================================================================
+//Comp Model Functions
+//=========================================================================================
+
+//Comp Constructor. Set up win Message.
+CompModel::CompModel()
+{
+	winMessage = "You have been Defeated.Computer won!\n";
+}
+
+//Sets Best Move
+void CompModel::SetBestMove(vector<int> temp)
+{
+	bestMove = temp;
+}
+
+//Update ROw and Col with the best move
+void CompModel::OverrideMove()
+{
+	setRow(bestMove[0]);
+	setCol(bestMove[1]);
+}
+
 //=========================================================================================
 //Grid Model Functions
 //=========================================================================================
 
+//Constuctor. Set up defaults for diagonals. 
+GridModel::GridModel()
+{
+	right_Diagonals = { { 0, 0 },{ 1, 1 },{ 2, 2 } };
+	left_Diagonals = { { 2, 0 },{ 1, 1 },{ 0, 2 } };
+}
+
+//Return state of the grid
+bool GridModel::isFull()
+{
+	return bFull;
+}
+
 // Searches grid for a string
-matrix gridModel::searchGrid(gridModel grid, string str)
+matrix GridModel::searchGrid(GridModel grid, string str)
 {
 	matrix moves;
 
@@ -32,7 +136,7 @@ matrix gridModel::searchGrid(gridModel grid, string str)
 }
 
 //Check if there are empty spaces in the grid
-void gridModel::isGridFull(gridModel grid)
+void GridModel::isGridFull(GridModel grid)
 {
 	string str = "";
 	if (searchGrid(grid, str).size() > 0)
@@ -47,7 +151,7 @@ void gridModel::isGridFull(gridModel grid)
 
 
 //Check for win conditions and draw
-bool gridModel::checkWins(gridModel &gridInfo, turnModel playerInfo)
+bool GridModel::checkWins(GridModel &gridInfo, TurnModel playerInfo)
 {
 	bool bWin = false;
 	bool bEmpty = true;
@@ -99,7 +203,7 @@ bool gridModel::checkWins(gridModel &gridInfo, turnModel playerInfo)
 
 
 //Scans the row for two of the same mark and empty space
-bool gridModel::rowCheck(gridModel grid, string compMark, int row, vector<int> &Move)
+bool GridModel::rowCheck(GridModel grid, string compMark, int row, vector<int> &Move)
 {
 	int count = 0;
 
@@ -133,7 +237,7 @@ bool gridModel::rowCheck(gridModel grid, string compMark, int row, vector<int> &
 }
 
 //Scans the column of a grid 
-bool gridModel::colCheck(gridModel grid, string compMark, int col, vector<int> &Move)
+bool GridModel::colCheck(GridModel grid, string compMark, int col, vector<int> &Move)
 {
 	int count = 0;
 	vector<int> temp;
@@ -165,7 +269,7 @@ bool gridModel::colCheck(gridModel grid, string compMark, int col, vector<int> &
 }
 
 // Scans the diagonals of the grid looking for two marks and an empty space
-bool gridModel::checkDiags(gridModel grid, matrix diags, string compMark, vector<int> &Move)
+bool GridModel::checkDiags(GridModel grid, matrix diags, string compMark, vector<int> &Move)
 {
 	int count = 0;
 	vector<int> temp;
@@ -199,7 +303,7 @@ bool gridModel::checkDiags(gridModel grid, matrix diags, string compMark, vector
 }
 
 // Searches grid for a string
-void gridModel::gridReset()
+void GridModel::gridReset()
 {
 
 	for (int i = 0; i < 3; i++)
@@ -210,4 +314,30 @@ void gridModel::gridReset()
 
 		}
 	}
+}
+
+//=========================================================================================
+//Game Model Functions
+//=========================================================================================
+
+//Constructor with default values
+GameModel::GameModel()
+{
+	bWin = false;
+	bQuit = false;
+	bPlayerTurn = true;
+	bPlayAgain = false;
+}
+
+
+void GameModel::resetModel()
+{
+	//Calling constructor to reset the defaults. Is this valid?
+	GameModel();
+	/*
+	bWin = false;
+	bQuit = false;
+	bPlayerTurn = true;
+	bPlayAgain = false;
+	*/
 }

@@ -5,14 +5,14 @@
 
 using namespace std;
 
-class gridView 
+class GridView 
 {
 public:
-	void drawGrid(gridModel grid);
+	void drawGrid(GridModel grid);
 };
 
 
-class drawUI
+class DrawUI
 {
 
 public:

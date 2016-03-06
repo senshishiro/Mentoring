@@ -12,7 +12,7 @@ using namespace std;
 
 
 //Draws the Grid
-void gridView::drawGrid(gridModel grid)
+void GridView::drawGrid(GridModel grid)
 {
 	cout << "   | 1 | 2 | 3\n";
 	cout << "---+---+---+---\n";
@@ -52,25 +52,25 @@ void gridView::drawGrid(gridModel grid)
 
 
 //Draw text
-void drawUI::draw(string s)
+void DrawUI::draw(string s)
 {
 	cout << s;
 }
 
 //Draws errors
-void drawUI::errorOutput(string errStr)
+void DrawUI::errorOutput(string errStr)
 {
 	cerr << errStr;
 }
 
 // Draws a line
-void drawUI::drawLine()
+void DrawUI::drawLine()
 {
 	cout << "----------------------------------------\n";
 }
 
 //Draw intro
-void drawUI::drawIntro()
+void DrawUI::drawIntro()
 {
 	drawLine();
 	cout << "Tic Tac Toe\n";

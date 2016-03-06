@@ -15,7 +15,7 @@ using namespace std;
 //=========================================================================================
 
 //Find all open spots and randomly chooses one
-void compController::compRandomTurn(GridController &GridC)
+void CompController::compRandomTurn(GridController &GridC)
 {
 	vector<int> vecRow;
 	vector<int> vecCol;
@@ -37,13 +37,13 @@ void compController::compRandomTurn(GridController &GridC)
 }
 
 //Scan the whole grid for winning moves
-bool compController::compPotentialWins(GridController GridC)
+bool CompController::compPotentialWins(GridController GridC)
 {
 	vector<int> temp;
 	matrix right_Diagonal = GridC.gridInfo.right_Diagonals;
 	matrix left_Diagonal = GridC.gridInfo.left_Diagonals;
 	string compMark = compInfo.getSign();
-	gridModel gridM = GridC.gridInfo;
+	GridModel gridM = GridC.gridInfo;
 
 	//scans all rows and columns
 	for (int i = 0; i < 3; i++)
@@ -77,7 +77,7 @@ bool compController::compPotentialWins(GridController GridC)
 
 
 // Searches the grid for two in a row to block player wins
-bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
+bool CompController::compBlockWins(GridController GridC, TurnModel playerInfo)
 {
 	//player's previous turn
 	int x = playerInfo.getRow();
@@ -85,7 +85,7 @@ bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
 	string playerMark = playerInfo.getSign();
 	matrix right_Diagonal = GridC.gridInfo.right_Diagonals;
 	matrix left_Diagonal = GridC.gridInfo.left_Diagonals;
-	gridModel gridM = GridC.gridInfo;
+	GridModel gridM = GridC.gridInfo;
 
 	//temp vectors
 	vector<int> temp;
@@ -144,12 +144,12 @@ bool compController::compBlockWins(GridController GridC, turnModel playerInfo)
 }
 
 // Comp Turn Logic - Check for possible wins and Potential Player wins. Random Move if there are none.
-void compController::compTurn(turnModel &activePlayer, GridController &gControl, playerModel playerInfo, bool &bQuit)
+void CompController::compTurn(TurnModel &activePlayer, GridController &gControl, PlayerModel playerInfo, bool &bQuit)
 {
 	if (playerInfo.prevTurnExists())
 	{
 		//Check for potential wins
-		if (compPotentialWins(gControl, compInfo))
+		if (compPotentialWins(gControl))
 		{
 			compInfo.OverrideMove();
 		}
@@ -172,7 +172,6 @@ void compController::compTurn(turnModel &activePlayer, GridController &gControl,
 	gControl.updateGrid(gControl.gridInfo, compInfo);
 	//Store comp info into activePlayer
 	activePlayer = compInfo;
-	activePlayer.SetWinMessage(compInfo.winMessage);
 }
 
 
@@ -181,6 +180,25 @@ void compController::compTurn(turnModel &activePlayer, GridController &gControl,
 //Player Controller Functions
 //=========================================================================================
 
+//Converts input into a string
+string PlayerController::getInput()
+{
+	string strInput;
+	getline(cin, strInput);
+	return strInput;
+}
+
+//Function that converts strings to lowercase
+string PlayerController::toLowercase(string strText)
+{
+	int k = strText.length();
+	for (int i = 0; i < k; i++)
+	{
+		strText[i] = tolower(strText[i]);
+	}
+
+	return strText;
+}
 
 //Splits string by delimiter. returns values in a vector
 void PlayerController::split(string s, char delim, vector<string> &elems)
@@ -221,7 +239,7 @@ bool PlayerController::setCoords(GridController gridC, string userCoords, string
 	int x, y;
 	errorStrings errors;
 	vector<string> input;
-	gridModel grid = gridC.gridInfo;
+	GridModel grid = gridC.gridInfo;
 	
 	split(userCoords, ' ', input);
 
@@ -261,7 +279,7 @@ bool PlayerController::setCoords(GridController gridC, string userCoords, string
 }
 
 //Player Setup. Ask if player wants to go first, and asks for sign
-bool PlayerController::playerSetup(compController &comp)
+bool PlayerController::playerSetup(CompController &comp)
 {
 	bool firstMove;
 	// Ask if player want to go first
@@ -308,7 +326,7 @@ bool PlayerController::turnOrder()
 }
 
 //Asks player if they want to be X or O
-void PlayerController::setXO(compController &comp)
+void PlayerController::setXO(CompController &comp)
 {
 	string strInput;
 	bool exit = false;
@@ -379,7 +397,7 @@ bool PlayerController::playAgain()
 }
 
 //Grabs player's input and updates the grid
-void PlayerController::playerTurn(turnModel &activePlayer, GridController &gControl, bool &bQuit)
+void PlayerController::playerTurn(TurnModel &activePlayer, GridController &gControl, bool &bQuit)
 {
 	//Get move
 	getMove(gControl, bQuit);
@@ -387,15 +405,32 @@ void PlayerController::playerTurn(turnModel &activePlayer, GridController &gCont
 	//Update grid and set the active player and winMessage
 	gControl.updateGrid(gControl.gridInfo, playerInfo);
 	activePlayer = playerInfo;
-	activePlayer.SetWinMessage(playerInfo.winMessage);
 }
 
 //=========================================================================================
 //Grid Controller Functions
 //=========================================================================================
 
+//Draw Grid
+void GridController::drawGrid()
+{
+	gridV.drawGrid(gridInfo);
+}
+
+//Check grid for wins
+bool GridController::checkWins(GridModel &gridInfo, TurnModel playerTurn)
+{
+	return gridInfo.checkWins(gridInfo, playerTurn);
+}
+
+// Return state of the grid
+bool GridController::isFull()
+{
+	return gridInfo.isFull();
+}
+
 //Validates player's move and updates grid
-bool GridController::updateGrid(gridModel &grid, turnModel playerTurn)
+bool GridController::updateGrid(GridModel &grid, TurnModel playerTurn)
 {
 	int x = playerTurn.getRow();
 	int y = playerTurn.getCol();

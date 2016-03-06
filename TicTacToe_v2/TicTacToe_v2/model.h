@@ -27,108 +27,71 @@ public:
 };
 
 //=========================================================================================
-//turnModel - Contains turn coordinats and 
-class turnModel
+//turnModel - Contains turn coordinats and win message
+
+class TurnModel
 {
 private:
 	string sign;
-	string winMessage;
-	
+		
 protected:
 	int row, col;
+	string winMessage;
 	vector<int> prevTurn = { row, col };
+
 public:
 	
 	//Set and get rows
-	void setRow(int x)
-	{
-		row = x;
-	}
+	void setRow(int x);
+	int getRow();
 
-	int getRow()
-	{
-		return row;
-	}
 	//Set and get cols
-	void setCol(int y)
-	{
-		col = y;
-	}
-
-	int getCol()
-	{
-		return col;
-	}
+	void setCol(int y);
+	int getCol();
 
 	//Set and get sign
-	void setSign(string s)
-	{
-		sign = s;
-	}
-	
-	string getSign()
-	{
-		return sign;
-	}
+	void setSign(string s);
+	string getSign();
 
 	//Set and get win message
-	void SetWinMessage(string s)
-	{
-		winMessage = s;
-	}
-
-	string getWinMessage()
-	{
-		return winMessage;
-	}
+	void setWinMessage(string s);
+	string getWinMessage();
 
 };
 
 //=========================================================================================
 
-class playerModel: public turnModel
+class PlayerModel: public TurnModel
 {
-
 public:
-
-	string winMessage = "Congratulations! You Won!.\n";
+	//Constuctor
+	PlayerModel();
 
 	//Check if previous turn exists
-	bool prevTurnExists()
-	{
-		if (prevTurn.size() > 0)
-			return true;
-		else
-			return false;
-	}
+	bool prevTurnExists();	
 };
 
 //=========================================================================================
 
-class compModel : public turnModel
+class CompModel : public TurnModel
 {
+private:
 	vector<int> bestMove;
 	
 public:
-	string winMessage = "You have been Defeated.Computer won!\n";
+	//Constuctor
+	CompModel();
 
 	//Sets Best Move
-	void SetBestMove(vector<int> temp)
-	{
-		bestMove = temp;
-	}
+	void SetBestMove(vector<int> temp);
 
 	//Update ROw and Col with the best move
-	void OverrideMove()
-	{
-		setRow(bestMove[0]);
-		setCol(bestMove[1]);
-	}
+	void OverrideMove();
 };
 
 //=========================================================================================
 
-class gridModel
+class GridModel
 {
 private:
 	//Grid is full
@@ -136,32 +99,44 @@ private:
 
 public:
 	//Diagonals
-	const matrix right_Diagonals = { { 0, 0 },{ 1, 1 },{ 2, 2 } };
-	const matrix left_Diagonals = { { 2, 0 },{ 1, 1 },{ 0, 2 } };
 
+	//Doesn't compile in vs2013
+	//const matrix right_Diagonals = { { 0, 0 },{ 1, 1 },{ 2, 2 } };
+	//const matrix left_Diagonals = { { 2, 0 },{ 1, 1 },{ 0, 2 } };
+
+	matrix right_Diagonals; 
+	matrix left_Diagonals;
+	
 	//Grid Array
 	string gridArray[3][3];
+	
+	//Constructor
+	GridModel();
 
-	bool isFull()
-	{
-		return bFull;
-	}
-
+	//Return state of the grid
+	bool isFull();
+	
+	//Reset the grid
 	void gridReset();
-	matrix searchGrid(gridModel grid, string str);
-	void isGridFull(gridModel grid);
+	
+	//Scans grid for a string
+	matrix searchGrid(GridModel grid, string str);
+	
+	//Scans grid for empty spaces. 
+	void isGridFull(GridModel grid);
 	
 	//Check functions
-	bool checkWins(gridModel &gridInfo, turnModel playerInfo);
-	//
-	bool rowCheck(gridModel grid, string compMark, int row, vector<int> &Move);
-	bool colCheck(gridModel grid, string compMark, int col, vector<int> &Move);
-	bool checkDiags(gridModel grid, matrix diags, string compMark, vector<int> &Move);
+	bool checkWins(GridModel &gridInfo, TurnModel playerInfo);
+	
+	//Check Functions for comp
+	bool rowCheck(GridModel grid, string compMark, int row, vector<int> &Move);
+	bool colCheck(GridModel grid, string compMark, int col, vector<int> &Move);
+	bool checkDiags(GridModel grid, matrix diags, string compMark, vector<int> &Move);
 
 };
 
 //=========================================================================================
-class gameModel
+class GameModel
 {
 public:
 	bool bWin = false;
@@ -169,14 +144,10 @@ public:
 	bool bPlayerTurn = true;
 	bool bPlayAgain = false;
 
+	//constructor
+	GameModel();
 
-	void resetModel()
-	{
-		bWin = false;
-		bQuit = false;
-		bPlayerTurn = true;
-		bPlayAgain = false;
-	}
+	void resetModel();
 };
 
 
