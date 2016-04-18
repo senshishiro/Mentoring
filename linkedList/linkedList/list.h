@@ -4,20 +4,33 @@
 #include <sstream>
 
 //==========================================================================
+//Nodes
+//==========================================================================
+class Node
+{
+public:
+		int x;
+		Node* next;
+};
+
+class Double_Node
+{
+public:
+	int x;
+	Double_Node* next;
+	Double_Node* prev;
+};
+
+//==========================================================================
 //Singly Linked List
 //==========================================================================
 class SinglyList
 {
 private:
-	struct node
-	{
-		int x;
-		node* next;
-	};
 
-	node* head;
-	node* current;
-	node* previous;
+	Node* head;
+	Node* current;
+	Node* previous;
 
 public:
 	//Constructor
@@ -47,17 +60,10 @@ public:
 class DoublyList
 {
 private:
-	struct node
-	{
-		int x;
-		node* next;
-		node* prev;
 
-	};
-
-	node* first;
-	node* last;
-	node* current;
+	Double_Node* first;
+	Double_Node* last;
+	Double_Node* current;
 
 public:
 	//Constructor
@@ -75,7 +81,7 @@ public:
 	int size();
 
 	//reverse
-	//void reverseList();
+	void reverseList();
 	//isEmpty
 	bool isEmpty();
 	//toString
