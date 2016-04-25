@@ -24,17 +24,23 @@ int main()
 	dList.addNode(11);
 	dList.addNode(13);
 	dList.printList();
-
+	int j = dList.getSize();
+	cout << "Size of list: " << j << endl;
 	dList.deleteNode(10);
 	dList.deleteNode(7);
 	dList.reverseList();
 	dList.printList();
 	dList.printListReverse();
-	int j = dList.size();
+	cout << "-------------------------------------------\n";
+	//dList.sort();
+	j = dList.getSize();
 	cout << "Size of list: " << j << endl;
 	cout << "List Deleted\n";
 	dList.deleteAll();
 	dList.printList();
+	j = dList.getSize();
+	cout << "Size of list: " << j << endl;
+
 	
 	//-------------------------------------------
 	cout << "-------------------------------------------\n";
@@ -51,15 +57,19 @@ int main()
 	list.addNode(8);
 	list.addNode(10);
 	list.printList();
-	list.deleteNode(7);
+	int k = list.getSize();
+	cout << "Size of list: " << k << endl;
+	list.deleteNode(0);
 	list.deleteNode(22);
 	list.printList();
 	list.reverseList();
 	list.printList();
-	int k = list.size();
+	k = list.getSize();
 	cout << "Size of list: " << k << endl;
 	list.deleteAll();
 	list.printList();
+
+
     return 0;
 }
 

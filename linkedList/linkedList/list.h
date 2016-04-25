@@ -13,12 +13,12 @@ public:
 		Node* next;
 };
 
-class Double_Node
+class DoubleNode
 {
 public:
 	int x;
-	Double_Node* next;
-	Double_Node* prev;
+	DoubleNode* next;
+	DoubleNode* prev;
 };
 
 //==========================================================================
@@ -29,10 +29,9 @@ class SinglyList
 private:
 
 	Node* head;
-	Node* current;
-	Node* previous;
-
+	int size;
 public:
+	
 	//Constructor
 	SinglyList();
 
@@ -44,7 +43,7 @@ public:
 	void deleteAll();
 
 	//size
-	int size();
+	int getSize();
 
 	//reverse
 	void reverseList();
@@ -61,10 +60,9 @@ class DoublyList
 {
 private:
 
-	Double_Node* first;
-	Double_Node* last;
-	Double_Node* current;
-
+	DoubleNode* first;
+	DoubleNode* last;
+	int size;
 public:
 	//Constructor
 	DoublyList();
@@ -78,7 +76,7 @@ public:
 	void deleteAll();
 
 	//size
-	int size();
+	int getSize();
 
 	//reverse
 	void reverseList();
@@ -87,4 +85,9 @@ public:
 	//toString
 	void printList();
 	void printListReverse();
+
+	//sort
+
+	void sort();
+	void swap(DoubleNode* a, DoubleNode* b);
 };

@@ -14,8 +14,7 @@ using namespace std;
 SinglyList::SinglyList()
 {
 	head = NULL;
-	current = NULL;
-	previous = NULL;
+	size = 0;
 }
 
 //--------------------------------------------------------
@@ -25,6 +24,7 @@ void SinglyList::addNode(int data)
 {
 	//create node
 	Node* n = new Node;
+	Node* current = head;
 	n->x = data;
 	n->next = NULL;
 	
@@ -32,7 +32,7 @@ void SinglyList::addNode(int data)
 	//if a list already exists
 	if (head != NULL)
 	{
-		current = head;
+		//current = head;
 
 		//search for the last node of the list
 		while (current->next != NULL)
@@ -41,23 +41,24 @@ void SinglyList::addNode(int data)
 		}
 
 		current->next = n;
+		size++;
 	}
 	//set to head if a node doesn't exist 
 	else
 	{
 		head = n;
+		size++;
 	}
 }
 
 //--------------------------------------------------------
 //deleteNode
-//BigO Analysis: O(N) - Only loops through the linked list once looking for matching value
+//BigO Analysis: O(N) - loops through the linked list once looking for matching value
 
 void SinglyList::deleteNode(int data)
 {
-	Node* delNode = NULL;
-	current = head;
-	previous = head;
+	Node* current = head;
+	Node* previous = head;
 
 	//find node
 	while (current != NULL && current->x != data)
@@ -65,26 +66,24 @@ void SinglyList::deleteNode(int data)
 		previous = current;
 		current = current->next;
 	}
+
+
 	//print error if there are no matches
 	if (current == NULL)
 	{
 		cerr << "error: " << data << " does not exist in the list.\n";
-		delete delNode;
 	}
 	else
 	{
-		delNode = current;
-
 		//update head if the first node is deleted
-		if (delNode == head)
+		if (current == head)
 		{
 			head = head->next;
 		}
 
-		current = current->next;
-		previous->next = current;
-		delete delNode;
-
+		previous->next = current->next;
+		delete current;
+		size--;
 		cout << data << " was deleted from the list.\n";
 	}	
 }
@@ -94,63 +93,48 @@ void SinglyList::deleteNode(int data)
 //BigO Analysis: O(N) - Only loops through once deleting each node.
 void SinglyList::deleteAll()
 {
-	Node* delNode = NULL;
-	current = head;
-
+	Node* current = head;
 
 	while (current != NULL)
 	{
-		delNode = current;
-		current = current->next;
-		delete delNode;
+		head = current->next;
+		delete current;
+		current = head;
 	}
 
 	//cout << "List has been emptied\n";
 	head = NULL;
-	current = NULL;
-	previous = NULL;
+	size = 0;
 }
 
 //--------------------------------------------------------
 // reverse list
-//BigO Analysis: O(N) - Loops through the list rebuilding the list in reverse
+//BigO Analysis: O(N) - Loops through the list rebuilding it in reverse
 void SinglyList::reverseList()
 {
 	Node* temp = NULL;
 
-	current = head;
-	previous = head;
+	Node* current = head;
+	Node* previous = NULL;
 	
 	while (current != NULL)
 	{
-		//Converts the first node into the last
-		if (current == head)
-		{
-			temp = current;
-			current = current->next;
-			temp->next = NULL;
-		}
-		else
-		{			
-				temp = current;
-				current = current->next;
-				temp->next = previous;				
-		}		
+		temp = current;
+		current = current->next;
+		temp->next = previous;
 		previous = temp;
 	}
 	
-	//if current is at the end of the list, makes the previous node the head
-	if (current == NULL)
-	{
-		head = previous;
-	}	
+	//makes the last node in the loop the head
+	head = previous;
+
 }
 //--------------------------------------------------------
 //printList
-//BigO Analysis:
+//BigO Analysis: O(N) - loops throught the list, and prints out data
 void SinglyList::printList()
 {
-	current = head;
+	Node* current = head;
 	if (isEmpty())
 	{
 		cout << "The list is empty\n";
@@ -171,18 +155,9 @@ void SinglyList::printList()
 //size
 //BigO Analysis: O(N) - Loops through linked list counting all the nodes
 
-int SinglyList::size()
+int SinglyList::getSize()
 {
-	int count = 0;
-	current = head;
-
-	while (current != NULL)
-	{
-		count++;
-		current = current->next;
-	}
-
-	return count; 
+	return size; 
 }
 
 //--------------------------------------------------------
@@ -211,7 +186,7 @@ DoublyList::DoublyList()
 {
 	first = NULL;
 	last = NULL;
-	current = NULL;
+	size = 0;
 }
 
 //--------------------------------------------------------
@@ -220,7 +195,7 @@ DoublyList::DoublyList()
 void DoublyList::addNode(int data)
 {
 	//create node
-	Double_Node* n = new Double_Node;
+	DoubleNode* n = new DoubleNode;
 	n->x = data;
 	n->next = NULL;
 	n->prev = NULL;
@@ -231,6 +206,7 @@ void DoublyList::addNode(int data)
 		last->next = n;
 		n->prev = last;
 		last = n;
+		
 	}
 	else
 	{
@@ -238,17 +214,17 @@ void DoublyList::addNode(int data)
 		first = n;
 		last = n;
 	}
+	size++;
 
 }
 //--------------------------------------------------------
 //deleteNode
-//BigO: O(N)
+//BigO: O(N) - one loop that searches for the matching data to delete
 
 void DoublyList::deleteNode(int data)
 {
-	Double_Node* delNode = NULL;
-	Double_Node* endCurrent = last;
-	current = first;
+	DoubleNode* endCurrent = last;
+	DoubleNode* current = first;
 	
 
 	//search for node wioth matching data in the list - one pointer at the beginning and end, moving towards the middle.
@@ -273,20 +249,20 @@ void DoublyList::deleteNode(int data)
 	if (current == NULL)
 	{
 		cerr << "error: " << data << " does not exist in the list.\n";
-		delete delNode;
+		//delete delNode;
 	}
 	else
 	{
-		delNode = current;
+		//delNode = current;
 
 		//reaasign first node when it is about to be deleted
-		if (delNode == first)
+		if (current == first)
 		{
 			first = first->next;
 			first->prev = NULL;
 		}
 		//reaasign last node when it is about to be deleted
-		else if (delNode == last)
+		else if (current == last)
 		{
 			last = last->prev;
 			last->next = NULL;
@@ -294,14 +270,12 @@ void DoublyList::deleteNode(int data)
 		else
 		{
 			//Connect the two nodes adjacent to the deleted node
-			current = current->next;
-			current->prev = delNode->prev;
-			(delNode->prev)->next = current;
+			(current->next)->prev = current->prev;
+			(current->prev)->next = current->next;
 		}
 
-
-		delete delNode;
-
+		delete current;
+		size--;
 		cout << data << " was deleted from the list.\n";
 	}
 }
@@ -311,20 +285,19 @@ void DoublyList::deleteNode(int data)
 //BigO: O(N) - One loop that goes through each node in the list and delete it
 void DoublyList::deleteAll()
 {
-	Double_Node* delNode = NULL;
-	current = first;
+	DoubleNode* current = first;
 
 	while (current != NULL)
 	{
-		delNode = current;
-		current = current->next;
-		delete delNode;
+		first = first->next;
+		delete current;
+		current = first;
 	}
 
 	//reset nodes
 	first = NULL;
-	current = NULL;
 	last = NULL;
+	size = 0;
 }
 
 //--------------------------------------------------------
@@ -332,8 +305,8 @@ void DoublyList::deleteAll()
 //BigO Analysis: O(N) - Loops through the list swapping the prev and next pointers
 void DoublyList::reverseList()
 {
-	Double_Node* previous = NULL;
-	current = first;
+	DoubleNode* previous = NULL;
+	DoubleNode* current = first;
 
 	while (current != NULL)
 	{
@@ -365,7 +338,7 @@ void DoublyList::reverseList()
 //BigO: O(N) - one loop goes through each loop, and prints out the data.
 void DoublyList::printList()
 {
-	current = first;
+	DoubleNode* current = first;
 	if (isEmpty())
 	{
 		cout << "The list is empty\n";
@@ -388,7 +361,7 @@ void DoublyList::printList()
 //BigO: O(N) - one loop goes through each loop, and prints out the data.
 void DoublyList::printListReverse()
 {
-	current = last;
+	DoubleNode* current = last;
 	if (isEmpty())
 	{
 		cout << "The list is empty\n";
@@ -408,20 +381,11 @@ void DoublyList::printListReverse()
 
 //--------------------------------------------------------
 //size
-//BigO Analysis: O(N) - Loops through linked list counting all the nodes
+//BigO Analysis: O(1) - calls size from class
 
-int DoublyList::size()
+int DoublyList::getSize()
 {
-	int count = 0;
-	current = first;
-
-	while (current != NULL)
-	{
-		count++;
-		current = current->next;
-	}
-
-	return count;
+	return size;
 }
 
 //--------------------------------------------------------
@@ -438,3 +402,82 @@ bool DoublyList::isEmpty()
 		return false;
 	}
 }
+/*
+//--------------------------------------------------------
+//swap
+//BigO:
+
+void DoublyList::swap(DoubleNode* a, DoubleNode* b)
+{
+	DoubleNode* temp = new DoubleNode;
+	cout << "first " << a->x << " second "<< b->x <<endl;
+	cout << "first " << a->next << " second " << b->next << endl;
+	
+	
+	//temp = a;
+	temp->prev = a->prev;
+	temp->next = a->next;
+	
+
+	//a->x = b->x;
+	a->prev = b->prev;
+	a->next = b->next;
+
+	//b = temp;
+	b->prev = temp->prev;
+	b->next = temp->next;
+
+	//delete temp;
+	cout << "first " << a->x << " second " << b->x << endl;
+	cout << "first " << a->next << " second " << b->next << endl;
+
+}
+
+
+//--------------------------------------------------------
+//sort
+//BigO:
+
+
+void DoublyList::sort()
+{
+	DoubleNode* current = first;
+	DoubleNode* inner = first;
+	DoubleNode* min = first;
+	DoubleNode* temp = new DoubleNode;
+	//DoubleNode* temp->prev = NULL;
+	//int min = first->x;
+
+	while (current != NULL)
+	{
+		min = current;
+		inner = current->next;
+		
+
+		while (inner != NULL)
+		{		
+			if (min->x > inner->x)
+			{	
+				min = inner;
+			}
+			inner = inner->next;
+		}
+	
+		
+		if (min->x < current->x)
+		{
+
+			swap(min, current);
+		}
+
+		if (min->x < first->x)
+		{
+			first = min;
+		}
+		
+		//current = current->next;
+
+		
+	}
+}
+*/
