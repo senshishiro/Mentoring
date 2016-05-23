@@ -10,7 +10,8 @@ int main()
 
 
 	SortData info;
-	vector<int> numbers = { 5, 3, 2, 1, 6, 7, 8, 9, 0, 12 };
+	//vector<int> numbers = { 5, 3, 2, 1, 6, 7, 8, 9, 0, 12 };
+	vector<int> numbers = { 5, 3};
 	vector<int> bubbleSorted;
 	vector<int> selectionSorted;
 	vector<int> insertionSorted;
@@ -20,7 +21,8 @@ int main()
 	selectionSorted = info.selectionSort(numbers);
 	insertionSorted = info.insertionSort(numbers);
 	
-	info.printList(insertionSorted);
+	info.mergeSort(numbers, 0 , (numbers.size() - 1));
+	//info.printList(insertionSorted);
 
     return 0;
 }
