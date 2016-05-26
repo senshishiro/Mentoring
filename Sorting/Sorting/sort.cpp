@@ -117,7 +117,7 @@ vector<int> SortData::insertionSort(vector<int> data)
 
 //===================================================================
 // Merge Sort
-
+/*
 void SortData::mergeSort(vector<int> &data, int start, int end)
 {
 	//find the midpoint
@@ -135,7 +135,7 @@ void SortData::mergeSort(vector<int> &data, int start, int end)
 		mergeSort(data, mid + 1, end);
 
 		//merge
-		merge(data, start, end, mid);
+		//merge(data, start, end, mid);
 	}
 
 
@@ -143,7 +143,7 @@ void SortData::mergeSort(vector<int> &data, int start, int end)
 	//print
 	printList(data);
 }
-
+/*
 void SortData::merge(vector<int> &data, int start, int end, int mid)
 {
 	//create temp array
@@ -187,7 +187,7 @@ void SortData::merge(vector<int> &data, int start, int end, int mid)
 		}
 		cout << i << endl;
 	}
-	*/
+	
 
 	while (x < mid && y < end)
 	{
@@ -218,4 +218,4 @@ void SortData::merge(vector<int> &data, int start, int end, int mid)
 		}
 	}
 
-}
+}*/

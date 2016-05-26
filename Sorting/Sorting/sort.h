@@ -23,7 +23,7 @@ public:
 
 private:
 	void swap(vector<int> &data, int a, int b);
-	void merge(vector<int> &data, int start, int end, int mid);
+	//void merge(vector<int> &data, int start, int end, int mid);
 };
 
 
