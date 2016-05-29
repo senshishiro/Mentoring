@@ -2,20 +2,10 @@
 #include "stdafx.h"
 #include "sort.h"
 
-//===================================================================
-// Swap
-void SortData::swap(vector<int> &data, int a, int b)
-{
-	int temp;
-
-	temp = data[a];
-	data[a] = data[b];
-	data[b] = temp;
-}
 
 //===================================================================
 // Print List
-void SortData::printList(vector<int> data)
+void Controller::printList(vector<int> data)
 {
 	int size = data.size();
 
@@ -35,8 +25,109 @@ void SortData::printList(vector<int> data)
 }
 
 //===================================================================
+// Set test data
+void TestController::setSourceData(vector<int> data)
+{
+	sourceData = data;
+}
+
+
+//===================================================================
+// Sort Test Helper
+
+string TestController::testChecker(vector<int> data)
+{
+	if (data == key)
+	{
+		return "PASSED";
+	}
+	else
+	{
+		return "FAILED";
+	}
+}
+
+//===================================================================
+// Add Test
+// Creates a TestObject and adds it to the vector
+void TestController::addTest(string name, vector<int> data)
+{
+	TestObject temp;
+
+	temp.sortName = name;
+	temp.data = data;
+
+	//Add test object to array
+	testDataArray.push_back(temp);
+}
+
+//===================================================================
+// Create Key
+// Uses STL sort to create key.
+
+void TestController::createKey(vector<int> testData)
+{
+	key = testData;
+	sort(key.begin(), key.end());
+}
+
+//===================================================================
+// Run Checker
+// Loops through all tests and runs it against the key
+void TestController::runTests(vector<int> testData, bool bDebug)
+{
+	setSourceData(testData);
+	createKey(testData);
+	int size = testDataArray.size();
+
+	cout << "-----------------------------------------------------------\n";
+	
+	cout << "Source : ";
+	printList(testData);
+
+	cout << "Key : ";
+	printList(key);
+
+	cout << "-----------------------------------------------------------\n";
+
+	if ( size > 0 )
+	{
+		for (int i = 0; i < size; i++)
+		{
+			string results = testChecker(testDataArray[i].data);
+
+			cout << testDataArray[i].sortName << " : " << results << endl;
+
+			if (bDebug)
+			{
+				cout << testDataArray[i].sortName << " : ";
+				printList(testDataArray[i].data);
+			}
+		}
+	}
+	else
+	{
+		cerr << "There is no test data";
+	}
+}
+
+//===================================================================
+// Swap
+void SortController::swap(vector<int> &data, int a, int b)
+{
+	int temp;
+
+	temp = data[a];
+	data[a] = data[b];
+	data[b] = temp;
+}
+
+//===================================================================
 // Bubble Sort
-vector<int> SortData::bubbleSort(vector<int> data)
+// Compares current and next value, and swaps to asceding order. 
+// Repeats until the array is sorted
+//===================================================================
+vector<int> SortController::bubbleSort(vector<int> data)
 {
 	bool sorted = true;
 	int size = data.size();
@@ -62,9 +153,11 @@ vector<int> SortData::bubbleSort(vector<int> data)
 
 //===================================================================
 // Selection Sort
-vector<int> SortData::selectionSort(vector<int> data)
+// Finds the smallest value and swaps it with the current value
+//===================================================================
+vector<int> SortController::selectionSort(vector<int> data)
 {
-	int size = data.size()-1;
+	int size = data.size();
 
 	for (int i = 0; i < size; i++)
 	{
@@ -82,7 +175,6 @@ vector<int> SortData::selectionSort(vector<int> data)
 		if (data[minPos] != data[i])
 		{
 			swap(data, i, minPos);
-			//printList(data);
 		}	
 	}
 		return data;
@@ -90,132 +182,233 @@ vector<int> SortData::selectionSort(vector<int> data)
 
 //===================================================================
 // Insertion Sort
-vector<int> SortData::insertionSort(vector<int> data)
+// Sorts Data by finding an elment smaller than the previous, then shifting it over
+//===================================================================
+vector<int> SortController::insertionSort(vector<int> data)
 {
-	int size = data.size() - 1;
+	int size = data.size();
 
-	//starts checking from the second element
+	//starts checking from the second element. 
+	// Zero element is checked below in data[j-1]
 	for (int i = 1; i < size; i++)
 	{
-		//int key = data[i];
-
-		//cout << "keys: " << i << endl;
 		for (int j = i; j > 0; j--)
 		{
+			//Check if previous element is larger than current element
 			if (data[j-1] > data[j])
 			{
-				//cout << "keys: " << j-1 << " " << j << endl;
-				//cout << data[j-1] << " " << data[j] << endl;
+				//Swaps with previous element 
 				swap(data, j-1, j);
-				//printList(data);
 			}
 		}
 	}
-
 	return data;
 }
 
 //===================================================================
 // Merge Sort
-/*
-void SortData::mergeSort(vector<int> &data, int start, int end)
+//===================================================================
+
+//-------------------------------------------------------------------
+// Merge Sort
+// Wrapper function
+vector<int> SortController::mergeSort(vector<int> data)
 {
-	//find the midpoint
+	int start = 0;
+	int end = data.size();
 
-	
-	//check for base case
-	if (start < end)
-	{
-		int mid = (start + end) / 2;
-		//split the two halves
-		//populate temp arrays
-
-		//split amd sort the halves	
-		mergeSort(data, start, mid);
-		mergeSort(data, mid + 1, end);
-
-		//merge
-		//merge(data, start, end, mid);
-	}
-
-
-
-	//print
-	printList(data);
+	mergeSorter(data, start, end);
+	return data;
 }
-/*
-void SortData::merge(vector<int> &data, int start, int end, int mid)
+
+//-------------------------------------------------------------------
+// Merge Sorter
+// Keeps splitting the data into single elements. Sorts and remerges everything as it goes back up.
+void SortController::mergeSorter(vector<int> &data, int start, int end)
 {
-	//create temp array
-	vector<int> leftArr, rightArr, temp;
-	cout << "check\n";
-	for (int i = 0; i < mid-start+1; i++)
+	//calculate mid point
+	int mid = (end + start) / 2;
+
+	//Base Case: return when there is one element
+	if (end - start <= 1)
 	{
-		leftArr.push_back( data[start + i]);
+		return;
 	}
+	//split and sort the halves	
+	mergeSorter(data, start, mid);
+	mergeSorter(data, mid, end);
 
-	for (int j = 0; j < end-mid; j++)
-	{
-		rightArr.push_back(data[mid + 1 + j]);
-	}
-	//loop through temp array
-	//compare elements from two halves
-	//add smallest element to temp array
+	//merge
+	merge(data, start, end);
+}
 
-	//counter for left half
-	int x = 0;
-	//counter for right half
-	int y = 0;
-	//counter for temp array
-	int z = 0;
-
+//-------------------------------------------------------------------
+//Merge function
+// Compares the two section in the array, and stores it in a helper array.
+// Helper array is copied back into the main array after sorting.
+void SortController::merge(vector<int> &data, int start, int end)
+{
+	//calculate new mid point
+	int mid = (end + start) / 2;
 	int left = start;
 	int right = mid;
+	int counter = start;
+	vector<int> temp = data;
 
-/*
-	for (int i = 0; i < end-start; i++)
+	//Check if the left side or right side has reached the midpoint/end
+	while (left < mid && right < end)
 	{
-		if (left < mid && (right >= end || leftArr[left] <= rightArr[right]))
+		//comparison between the values from the two arrays
+		if (data[left] <= data[right])
 		{
-			temp.push_back(leftArr[left]);
+			temp[counter] = data[left];
 			left++;
 		}
 		else
 		{
-			temp.push_back(rightArr[right]);
+			temp[counter] = data[right];
 			right++;
 		}
-		cout << i << endl;
+		counter++;
 	}
-	
 
-	while (x < mid && y < end)
+	//Add any remaining numbers from the left side
+	while (left < mid)
 	{
-		cout << "check - inner loop\n";
-		if (leftArr[x] <= rightArr[y])
+		temp[counter] = data[left];
+		left++;
+		counter++;
+	}
+
+	//Add any remaining numbers from the right side
+	while (right < end)
+	{
+		temp[counter] = data[right];
+		right++;
+		counter++;
+	}
+
+	//Copy sorted values back to the original array
+	data = temp;
+}
+
+//===================================================================
+// Quick Sort
+//===================================================================
+
+
+//-------------------------------------------------------------------
+// quickSort
+// wrapper function
+vector<int> SortController::quickSort(vector<int> data)
+{
+	int start = 0;
+	int end = data.size() - 1;
+
+	quickSorter(data, start, end);
+
+	return data;
+}
+
+//-------------------------------------------------------------------
+// quickSorter
+// Sorts the array by moving all values less than the pivot to the left,
+// and all values larger to the right.
+void SortController::quickSorter(vector<int> &data, int start, int end)
+{
+	if (start<end)
+	{
+		//Find Median
+		int median = medianThree(data, start, end);
+
+		//partition and find location of new pivots
+		int pivot = partition(data, start, end, median);
+
+		//quicksort first half before pivot
+		quickSorter(data, start, pivot-1);
+
+		//quicksort second half after pivot
+		quickSorter(data, pivot + 1, end);		
+	}
+	//BASE CASE: when end is greater than start, return.
+	else
+	{
+		//cout << "Base >> start: " << start << " end: " << end << endl;
+		return;
+	}
+
+}
+
+//-------------------------------------------------------------------
+// medianThree
+// Finds the mid element, and does a light sort between start and end
+// Reduces chance of worst case
+int SortController::medianThree(vector<int> &data, int start, int end)
+{
+	int mid = (start + end) / 2;
+
+	//sort start, end, and mid in the array.
+	if (data[start] > data[mid])
+	{
+		swap(data, start, mid);
+	}
+
+	if (data[start]>data[end])
+	{
+		swap(data, start, end);
+	}
+
+	if (data[mid] > data[end])
+	{
+		swap(data, mid, end);
+	}
+
+	return mid;
+}
+
+//-------------------------------------------------------------------
+// partition
+// Pivot is moved to the start of the array. Lower and Higher values to the right are swapped.
+// Pivot is restored to the last lower position.
+int SortController::partition(vector<int> &data, int start, int end, int median)
+{
+	//Start is increased by one to avoid the pivot at the beginning.
+	int i = start+1;
+	int j = end;
+	int pivot = data[median];
+
+	//Move the pivot to the front of the array
+	swap(data, start, median);
+
+	while (true)
+	{
+		//Find an element lower than the pivot
+		while (data[i] < pivot)
 		{
-			//add
-			temp.push_back(leftArr[x]);
-			x++;
+			i++;
+		}
+
+		//Find an element larger than the pivot while traversing the array backwards
+		while (data[j] > pivot)
+		{
+			j--;
+		}
+
+		//Stop the loop when i crosses j
+		if (i >= j)
+		{
+			break;
 		}
 		else
 		{
-			temp.push_back(rightArr[y]);
-			y++;
+			//Swap the lower and larger element in the array
+			swap(data, i, j);
 		}
 	}
 
-	if (y > mid+1)
-	{
+	//restore pivot back to center. Just before i and j crossed.
+	swap(data, start, i-1);
 
-	}
-
-	if (temp.size() > 0)
-	{
-		for (int i = start; i < end; i++)
-		{
-			data[i] = temp[i];
-		}
-	}
-
-}*/
+	//Send back new end index
+	return i-1;
+}
