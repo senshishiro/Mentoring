@@ -31,7 +31,6 @@ void TestController::setSourceData(vector<int> data)
 	sourceData = data;
 }
 
-
 //===================================================================
 // Sort Test Helper
 
