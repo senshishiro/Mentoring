@@ -9,8 +9,8 @@ int main()
 {
 	BinaryTree tree;
 
-	vector<int> testData = {5, 3, 10, 7, 8, 1};
-
+	//vector<int> testData = {5, 3, 10, 7, 8, 1, 6};
+	vector<int> testData = {5, 6, 3, 4, 2, 1};
 	for (int i = 0; i < testData.size(); i++)
 	{
 		cout << "-------------------------------\n";
@@ -19,22 +19,16 @@ int main()
 		cout << "-------------------------------\n";
 	}
 	
-	/*
-	tree.addNode(5);
-	tree.addNode(3);
-	tree.addNode(10);
-	tree.addNode(7);
-	tree.addNode(8);
-	tree.addNode(1);
-	*/
 
 	tree.printTree(tree.root);
 	cout << endl;
 	tree.search(8);
 	cout << endl;
-	tree.deleteNode(8);
+	tree.removeNode(1);
 	tree.printTree(tree.root);
+
 	cout << endl;
+	cout << "root: " << (tree.root)->data << endl;
     return 0;
 }
 

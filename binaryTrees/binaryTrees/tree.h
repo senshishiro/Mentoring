@@ -23,8 +23,13 @@ class BinaryTree
 {
 private:
 
-	Node * BinaryTree::insertNode(Node * root, int value);
-	Node * searchNode(Node * n, int value);
+	Node * insertNode(Node * root, int value);
+	Node * deleteNode(Node * root, int value);
+	bool searchNode(Node * n, int value);
+
+	//findSuccessor
+	Node * successorNode(Node * root);
+
 public:
 	Node * root;
 	BinaryTree();
@@ -35,10 +40,19 @@ public:
 	void addNode(int value);
 
 	//delete
-	void deleteNode(int value);
+	void removeNode(int value);
 	//print
 	void printTree(Node * node);
-	//void printNode();
+	int max(int a, int b);
+	int height(Node * node);
+
 
 	//rebalance
+	void rebalance(Node * n);
+	Node * rotateRight(Node * pivot);
+	Node * rotateLeft(Node * pivot);
+	Node * rotateRightLeft(Node * pivot);
+	Node * rotateLeftRight(Node * pivot);
+
+
 };

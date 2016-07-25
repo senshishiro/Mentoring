@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "tree.h"
 
+
+
+
+
 BinaryTree::BinaryTree()
 {
 	root = NULL;
@@ -9,31 +13,43 @@ BinaryTree::BinaryTree()
 
 void BinaryTree::search(int value)
 {
-
-	if (searchNode(root, value) != NULL)
+	if (searchNode(root, value) == false)
+	{
+		cout << "Value does not exists in tree";		
+	}
+	else
 	{
 		cout << value << " exists in tree\n";
 	}
-	else
-	{
-		cout << "Value does not exists in tree";
-	}
 }
 
-Node * BinaryTree::searchNode(Node * n, int value)
+bool BinaryTree::searchNode(Node * n, int value)
 {
+	//base case
 	if (n->data == value)
 	{
-		return n;
+		return true;
 	}
 	else if (n->data > value)
 	{
-		searchNode(n->left, value);
+		//NULL check
+		if (n->left == NULL)
+			return false;
+		else
+		{
+			return searchNode(n->left, value);
+		}	
 	}
-	else
+	else if(n->data < value)
 	{
-		searchNode(n->right, value);
+		//NULL check
+		if (n->right == NULL)
+			return false;
+		else
+			return searchNode(n->right, value);
 	}
+
+	return false;
 }
 
 Node * BinaryTree::createNode(Node * temp, int value)
@@ -42,6 +58,7 @@ Node * BinaryTree::createNode(Node * temp, int value)
 	temp->data = value;
 	temp->left = NULL;
 	temp->right = NULL;
+	temp->height = 0;
 
 	if (root == NULL)
 	{
@@ -54,71 +71,287 @@ Node * BinaryTree::createNode(Node * temp, int value)
 void BinaryTree::addNode(int value)
 {
 	insertNode(root, value);
-
 }
 
-Node * BinaryTree::insertNode(Node * temp, int value)
+Node * BinaryTree::insertNode(Node * n, int value)
 {
-	if (temp == NULL)
+	if (n == NULL)
 	{
 		cout << "node added: " << value << endl;
-		return createNode(temp, value);
+		//Update heights
+
+		return createNode(n, value);
 	}
-	else if (temp->data == value)
+	else if (n->data == value)
 	{
-		temp->data = value;
+		n->data = value;
 	}
 	else
 	{
-		//Node * child;
-		if (temp->data > value)
+		//Insert to left if value is less than current node, and update parent
+		if (n->data > value)
 		{
-			//insertNode(temp->left, value);
-			temp->left = insertNode(temp->left, value);
-			cout << "left\n";
-			cout << "inserting: " << (temp->left)->data << endl;
-			cout << "parent: " << temp->data << endl;
-			(temp->left)->parent = temp;
+			n->left = insertNode(n->left, value);
+			(n->left)->parent = n;
 		}
+		//Insert to right if value is less than current node, and update parent
 		else
 		{
-			//insertNode(temp->right, value);
-			temp->right = insertNode(temp->right, value);
-			cout << "right\n";
-			cout << "inserting: " << (temp->right)->data << endl;
-			cout << "parent: " << temp->data << endl;
-			(temp->right)->parent = temp;
+			n->right = insertNode(n->right, value);
+			(n->right)->parent = n;
 		}
+		//Update heights
+		n->height = height(n);
+		//cout << "balanced: " << (height(n->right) - height(n->left)) <<endl;
 
-		return temp;
+
+		rebalance(n);
+
+		return n;
 	}
 
-	
 }
 
-void BinaryTree::deleteNode(int value)
-{
-	//find node
-	Node* n;
-	n = searchNode(root, value);
 
-	cout << n->data << endl;
-	cout << (n->parent)->right << endl;
-	//delete leaf
-	
-	if (n->left == NULL && n->right == NULL)
+Node * BinaryTree::successorNode(Node * n)
+{
+	Node * temp = n->right;
+	//find the smallest node in the right subtree
+	if (n->right != NULL)
 	{
-		if ((n->parent)->left == n)
+		while (temp->left)
 		{
-			(n->parent)->left = NULL;
+			temp = temp->left;
+		}
+	}
+	return temp;
+}
+
+void BinaryTree::removeNode(int value)
+{
+	deleteNode(root, value);
+}
+Node* BinaryTree::deleteNode(Node * n, int value)
+{
+	//base case
+	if (n == NULL)
+	{
+		return n;
+	}
+	//Check left subtree
+	else if (value < n->data)
+	{	
+		n->left = deleteNode(n->left, value);
+	}
+	//Check right subtree
+	else if (value > n->data)
+	{
+		n->right = deleteNode(n->right, value);
+	}
+	//deletion
+	else
+	{
+		//leaf
+		if (n->left == NULL && n->right == NULL)
+		{
+			cout << "deleting: " << n->data << endl;
+			delete n;
+			n = NULL;		
+		}
+		//single child
+		else if (n->left == NULL || n->right == NULL)
+		{
+			// TODO: Might be able to condense code here
+			Node* temp = n;
+
+			if (n->left == NULL)
+			{
+				n = n->right;
+			}
+			else
+			{
+				n = n->left;
+			}
+
+			if (temp == root)
+			{
+				n->parent = NULL;
+				root = n;
+			}
+			else
+			{
+				n->parent = temp->parent;
+			}
+				
+			delete temp;
+		}
+		//double child
+		else
+		{
+			//Find successor
+			Node * succesor = successorNode(n);
+			//replace the data that's about to be deleted with successor
+			n->data = succesor->data;
+			// delete the duplicate
+			n->right = deleteNode(n->right, n->data);
+		}
+	}
+
+	//Update heights
+	if (n != NULL)
+	{
+		n->height = height(n);
+		rebalance(n);
+	}
+
+	return n;
+}
+
+
+//rebalance
+//max
+
+int BinaryTree::max(int a, int b)
+{
+	if (a > b)
+		return a;
+	else
+		return b;
+}
+
+//height
+int BinaryTree::height(Node * n)
+{
+	if (n == NULL)
+	{
+		return -1;
+	}
+	else
+	{
+		return (1 + max(height(n->right), height(n->left)));
+	}
+}
+
+//rebalance
+
+void BinaryTree::rebalance(Node * n)
+{
+	int balance;
+	balance = (height(n->left) - height(n->right));
+
+	if (balance > 1)
+	{
+		cout << "right unbalanced: " << balance << endl;
+		if (height(n->left->left) >= height(n->left->right))
+		{
+			n = rotateRight(n);
+		}		
+		else
+		{
+			n = rotateLeftRight(n);
+		}
+	}
+	else if (balance < -1)
+	{
+		cout << "left unbalanced: " << balance << endl;
+
+		if (height(n->right->right) >= height(n->right->left))
+		{
+			n = rotateLeft(n);
 		}
 		else
 		{
-			(n->parent)->right = NULL;
-		}
-
-		delete n;
+			n = rotateRightLeft(n);
+		}		
 	}
+}
+
+//rightRotation
+Node * BinaryTree::rotateRight(Node * n)
+{
+	Node * pivot = n->left;
+	pivot->parent = n->parent;
+	
+	n->left = pivot->right;
+
+	//update parent 
+	if (n->left != NULL)
+	{
+		(n->left)->parent = n;
+	}
+
+	pivot->right = n;
+	n->parent = pivot;
+
+	//reattach n's parent with pivot
+	if (pivot->parent != NULL)
+	{
+		if (pivot->parent->left == n)
+			pivot->parent->left == pivot;
+		else
+			pivot->parent->right == pivot;
+	}
+
+	if (n == root)
+	{
+		root = pivot;
+	}
+
+	//recalculate height after rotation
+	pivot->height = height(pivot);
+	n->height = height(n);
+
+	return pivot;
+}
+
+//left Rotation
+Node * BinaryTree::rotateLeft(Node * n)
+{
+	Node * pivot = n->right;
+	pivot->parent = n->parent;
+
+	n->right = pivot->left;
+
+	//update parent 
+	if (n->right != NULL)
+	{
+		(n->right)->parent = n;
+	}
+
+	pivot->left = n;
+	n->parent = pivot;
+
+	//reattach n's parent with pivot
+	if (pivot->parent != NULL)
+	{
+		if (pivot->parent->right == n)
+			pivot->parent->right == pivot;
+		else
+			pivot->parent->left == pivot;
+	}
+
+	if (n == root)
+	{
+		root = pivot;
+	}
+
+	//recalculate height after rotation
+	pivot->height = height(pivot);
+	n->height = height(n);
+
+	return pivot;
+}
+//rotate right first then left
+Node * BinaryTree::rotateRightLeft(Node * n)
+{
+	n->right = rotateRight(n->right);
+	return rotateLeft(n);
+}
+
+Node * BinaryTree::rotateLeftRight(Node * n)
+{
+	n->left = rotateLeft(n->left);
+	return rotateRight(n);
 }
 
 void BinaryTree::printTree(Node * node)
@@ -127,7 +360,7 @@ void BinaryTree::printTree(Node * node)
 		return;
 
 	printTree(node->left);
-	cout << node->data << " ";
+	cout << node->data << "(" << node->height << ") ";
 	printTree(node->right);
 }
 
