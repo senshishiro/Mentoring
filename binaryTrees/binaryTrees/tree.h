@@ -4,8 +4,9 @@
 
 using namespace std; 
 
-
-//node
+//==========================================================================
+//Binary Tree Node
+//==========================================================================
 struct Node
 {
 	int data;
@@ -13,7 +14,6 @@ struct Node
 	Node* left;
 	Node* right;
 	Node* parent;
-	
 };
 
 //==========================================================================
@@ -22,37 +22,40 @@ struct Node
 class BinaryTree
 {
 private:
-
-	Node * insertNode(Node * root, int value);
-	Node * deleteNode(Node * root, int value);
-	bool searchNode(Node * n, int value);
-
-	//findSuccessor
-	Node * successorNode(Node * root);
-
-public:
-	Node * root;
-	BinaryTree();
-	//search
-	void search(int value);
 	//add
-	Node * createNode(Node * temp, int value);
-	void addNode(int value);
-
+	Node * insertNode(Node * root, int value);
 	//delete
-	void removeNode(int value);
-	//print
-	void printTree(Node * node);
+	Node * deleteNode(Node * root, int value);
+	//search
+	bool searchNode(Node * n, int value);
+	//create node
+	Node * createNode(Node * temp, int value);
+	//find successor
+	Node * successorNode(Node * root);
+	//find max
 	int max(int a, int b);
+	// calculate height
 	int height(Node * node);
-
-
-	//rebalance
+	
+	//rebalancing and Rotations
 	void rebalance(Node * n);
 	Node * rotateRight(Node * pivot);
 	Node * rotateLeft(Node * pivot);
 	Node * rotateRightLeft(Node * pivot);
 	Node * rotateLeftRight(Node * pivot);
+public:
+	Node * root;
+	BinaryTree();
+	
+	//search
+	void search(int value);
+	
+	//add
+	void addNode(int value);
 
-
+	//delete
+	void removeNode(int value);
+	
+	//print
+	void printTree(Node * node);
 };
