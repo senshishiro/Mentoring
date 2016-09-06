@@ -1,16 +1,17 @@
 #include "stdafx.h"
 #include "tree.h"
 
-
-
-
-
+//Binary Tree Constructor
 BinaryTree::BinaryTree()
 {
 	root = NULL;
 }
 
+//----------------------------------------------------
+//Binary Tree Search Functions
 
+// Search
+// Prints out message depending SearchNode() results
 void BinaryTree::search(int value)
 {
 	if (searchNode(root, value) == false)
@@ -23,6 +24,8 @@ void BinaryTree::search(int value)
 	}
 }
 
+// Search Node
+// Recursively search throus the tree looking for value
 bool BinaryTree::searchNode(Node * n, int value)
 {
 	//base case
@@ -37,6 +40,7 @@ bool BinaryTree::searchNode(Node * n, int value)
 			return false;
 		else
 		{
+			//search left subtree
 			return searchNode(n->left, value);
 		}	
 	}
@@ -44,14 +48,30 @@ bool BinaryTree::searchNode(Node * n, int value)
 	{
 		//NULL check
 		if (n->right == NULL)
+		{
 			return false;
+		}
 		else
+		{
+			//search right subtree
 			return searchNode(n->right, value);
+		}
 	}
-
 	return false;
 }
 
+//----------------------------------------------------
+// Insertion functions
+
+// addNode
+// Helper function that calls Insert Node
+void BinaryTree::addNode(int value)
+{
+	insertNode(root, value);
+}
+
+// createNode
+// Helper function that initializes and creates a new node
 Node * BinaryTree::createNode(Node * temp, int value)
 {
 	temp = new Node;
@@ -68,20 +88,18 @@ Node * BinaryTree::createNode(Node * temp, int value)
 
 	return temp;
 }
-void BinaryTree::addNode(int value)
-{
-	insertNode(root, value);
-}
 
+//insertNode
+// Adds node after recursively finding a leaf
 Node * BinaryTree::insertNode(Node * n, int value)
 {
+	//Create Node
 	if (n == NULL)
 	{
-		cout << "node added: " << value << endl;
-		//Update heights
-
+		//cout << "node added: " << value << endl;
 		return createNode(n, value);
 	}
+	//Overwrite valuse if it already exists
 	else if (n->data == value)
 	{
 		n->data = value;
@@ -104,15 +122,26 @@ Node * BinaryTree::insertNode(Node * n, int value)
 		n->height = height(n);
 		//cout << "balanced: " << (height(n->right) - height(n->left)) <<endl;
 
-
+		//Rebalance after adding
 		rebalance(n);
 
 		return n;
 	}
+}
 
+//----------------------------------------------------
+//Delete Functions
+
+// remove Node
+// Helper functions that calls deleteNode
+void BinaryTree::removeNode(int value)
+{
+	deleteNode(root, value);
 }
 
 
+//successorNode
+// Finds the next larget node
 Node * BinaryTree::successorNode(Node * n)
 {
 	Node * temp = n->right;
@@ -127,10 +156,8 @@ Node * BinaryTree::successorNode(Node * n)
 	return temp;
 }
 
-void BinaryTree::removeNode(int value)
-{
-	deleteNode(root, value);
-}
+//deleteNode
+// Recursively searches the tree for node, then deletes based on the number of children
 Node* BinaryTree::deleteNode(Node * n, int value)
 {
 	//base case
@@ -163,7 +190,7 @@ Node* BinaryTree::deleteNode(Node * n, int value)
 		{
 			// TODO: Might be able to condense code here
 			Node* temp = n;
-
+			// checks which node is null, then overwrite n with child
 			if (n->left == NULL)
 			{
 				n = n->right;
@@ -172,7 +199,8 @@ Node* BinaryTree::deleteNode(Node * n, int value)
 			{
 				n = n->left;
 			}
-
+			
+			//Update root and parent
 			if (temp == root)
 			{
 				n->parent = NULL;
@@ -203,14 +231,14 @@ Node* BinaryTree::deleteNode(Node * n, int value)
 		n->height = height(n);
 		rebalance(n);
 	}
-
 	return n;
 }
 
+//----------------------------------------------------
+//rebalance functions
 
-//rebalance
 //max
-
+// Finds the max between two values
 int BinaryTree::max(int a, int b)
 {
 	if (a > b)
@@ -220,8 +248,10 @@ int BinaryTree::max(int a, int b)
 }
 
 //height
+// Calculates the node's height recursively
 int BinaryTree::height(Node * n)
 {
+	// leaf
 	if (n == NULL)
 	{
 		return -1;
@@ -233,15 +263,19 @@ int BinaryTree::height(Node * n)
 }
 
 //rebalance
-
+// checks the difference between the height of the subtrees. Determines if left or right heavy. 
+// rebalances with single or double rotations
 void BinaryTree::rebalance(Node * n)
 {
 	int balance;
+	//calculate the difference between the two subtrees
 	balance = (height(n->left) - height(n->right));
 
+	//left heavy
 	if (balance > 1)
 	{
-		cout << "right unbalanced: " << balance << endl;
+		//cout << "left unbalanced: " << balance << endl;
+		//checks the height of the left vs right subtrees to see if it needs to be rotated once or twice
 		if (height(n->left->left) >= height(n->left->right))
 		{
 			n = rotateRight(n);
@@ -251,10 +285,11 @@ void BinaryTree::rebalance(Node * n)
 			n = rotateLeftRight(n);
 		}
 	}
+	//right heavy
 	else if (balance < -1)
 	{
-		cout << "left unbalanced: " << balance << endl;
-
+		//cout << "right unbalanced: " << balance << endl;
+	//checks the height of the right vs left subtrees to see if it needs to be rotated once or twice
 		if (height(n->right->right) >= height(n->right->left))
 		{
 			n = rotateLeft(n);
@@ -270,16 +305,19 @@ void BinaryTree::rebalance(Node * n)
 Node * BinaryTree::rotateRight(Node * n)
 {
 	Node * pivot = n->left;
-	pivot->parent = n->parent;
 	
+	//update parent of pivot
+	pivot->parent = n->parent;
+
 	n->left = pivot->right;
 
-	//update parent 
+	//update parent of n->left
 	if (n->left != NULL)
 	{
 		(n->left)->parent = n;
 	}
 
+	//make n child of pivot
 	pivot->right = n;
 	n->parent = pivot;
 
@@ -287,11 +325,16 @@ Node * BinaryTree::rotateRight(Node * n)
 	if (pivot->parent != NULL)
 	{
 		if (pivot->parent->left == n)
+		{
 			pivot->parent->left == pivot;
+		}
 		else
+		{
 			pivot->parent->right == pivot;
+		}
 	}
-
+	
+	//update root
 	if (n == root)
 	{
 		root = pivot;
@@ -308,16 +351,18 @@ Node * BinaryTree::rotateRight(Node * n)
 Node * BinaryTree::rotateLeft(Node * n)
 {
 	Node * pivot = n->right;
+	//update parent of pivot
 	pivot->parent = n->parent;
-
+	
+	//updated n-> right to point to pivot->left
 	n->right = pivot->left;
-
 	//update parent 
 	if (n->right != NULL)
 	{
 		(n->right)->parent = n;
 	}
-
+	
+	//make n child of pivot
 	pivot->left = n;
 	n->parent = pivot;
 
@@ -330,6 +375,7 @@ Node * BinaryTree::rotateLeft(Node * n)
 			pivot->parent->left == pivot;
 	}
 
+	//update root
 	if (n == root)
 	{
 		root = pivot;
@@ -341,6 +387,8 @@ Node * BinaryTree::rotateLeft(Node * n)
 
 	return pivot;
 }
+
+//rotateRightLeft
 //rotate right first then left
 Node * BinaryTree::rotateRightLeft(Node * n)
 {
@@ -348,12 +396,17 @@ Node * BinaryTree::rotateRightLeft(Node * n)
 	return rotateLeft(n);
 }
 
+//rotateLeftRight
+//rotate left first then right
 Node * BinaryTree::rotateLeftRight(Node * n)
 {
 	n->left = rotateLeft(n->left);
 	return rotateRight(n);
 }
 
+//--------------------------------------------------
+//printTree
+// recurively prints the tree. 
 void BinaryTree::printTree(Node * node)
 {
 	if (node == NULL)
