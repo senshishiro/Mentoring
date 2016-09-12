@@ -2,13 +2,41 @@ Q:
 Is it an animal?
 Q:
 Does it hop?
+Q:
+Is it native to Australia?
+A:
+Kangaroo
 A:
 frog
 Q:
 Can it fly?
 A:
 bee
+Q:
+Does it meow?
+A:
+Cat
 A:
 dog
+Q:
+Does it blend?
+A:
+Blender
+Q:
+Is it sharp?
+Q:
+Is it long?
+A:
+Sword
+A:
+Knife
+Q:
+Can it fly?
+Q:
+Does it have wings?
+A:
+plane
+A:
+helicopter
 A:
 computer

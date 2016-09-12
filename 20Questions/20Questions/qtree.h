@@ -29,27 +29,46 @@ struct Node
 class QTree
 {
 private:
-	// adding nodes
+	
+	// loads text file into a vector
 	vector<Qset> convertQuestionText();
-	Node* insertNode(Node * &n, vector<Qset> questions, int &count);
+
+	Node* insertNode(Node * &n, vector<Qset> &questions, unsigned int &count);
 	Node* createNode(Node * n, string data, bool type);
 	
 	//input
-	Node* askQuestion(Node * node);
-	bool getInput();
-	bool playAgain();
 	string toLowercase(string str);
+	bool getInput();
+	string getData();
+	void addNewAnswer(Node * compAnswer, Node* previous);
+
+	// recursive function for navigating the tree
+	Node* askQuestion(Node * node, Node * previous);
+
+	// recursive function for dumping info from the tree to text file
+	void printToTxt(fstream &stream, Node * node);
+
+	//void treeSize();
+	//unsigned int treeNodes(Node * n);
 
 public:
 	Node* root;
-
+	bool bModified;
 	// constructor
 	QTree();
 
-	//add
-	void importQuestions();
-	//void printTree(Node * node);
+	//play again
+	bool playAgain();
 
+	//Load questions and build tree
+	void importQuestions();
+
+	// Navigate through tree with y/n responses
 	void treeTraversal(Node * node);
 
+	// update text file
+	void updateTxt();
+
+	//void printTree(Node * node);
+	
 };
