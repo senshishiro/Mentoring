@@ -26,6 +26,14 @@ Q:
 Is it sharp?
 Q:
 Is it long?
+Q:
+Did it originate from Japan?
+A:
+katana
+Q:
+Does it have an axe shape head?
+A:
+Halbred
 A:
 Sword
 A:
@@ -36,7 +44,11 @@ Q:
 Does it have wings?
 A:
 plane
+Q:
+Does it use a rotor to generate lift?
 A:
 helicopter
+A:
+Blimp
 A:
 computer

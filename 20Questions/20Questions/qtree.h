@@ -3,14 +3,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "inputs.h"
 
 using namespace std;
-
-struct Qset
-{
-	string type;
-	string data;
-};
 
 struct Node
 {
@@ -29,45 +24,39 @@ struct Node
 class QTree
 {
 private:
-	
-	// loads text file into a vector
-	vector<Qset> convertQuestionText();
+	// value for if the tree has been modified
+	bool bModified;
 
-	Node* insertNode(Node * &n, vector<Qset> &questions, unsigned int &count);
 	Node* createNode(Node * n, string data, bool type);
-	
-	//input
-	string toLowercase(string str);
-	bool getInput();
-	string getData();
-	void addNewAnswer(Node * compAnswer, Node* previous);
 
 	// recursive function for navigating the tree
-	Node* askQuestion(Node * node, Node * previous);
-
-	// recursive function for dumping info from the tree to text file
-	void printToTxt(fstream &stream, Node * node);
+	Node* treeTraversal(Node * node, Node * previous, bool &bWin);
 
 	//void treeSize();
 	//unsigned int treeNodes(Node * n);
 
 public:
 	Node* root;
-	bool bModified;
+	Node* lastAnswer;
+	Node* previousToLastAnswer;
+
 	// constructor
 	QTree();
 
-	//play again
-	bool playAgain();
+	// returns bModified
+	bool isModified();
 
-	//Load questions and build tree
-	void importQuestions();
+	// updates bModified
+	void updateModified(bool value);
+
+	// add nodes to the tree
+	void insertNode(Node * &n, vector<Qset> &questions, unsigned int &count);
 
 	// Navigate through tree with y/n responses
-	void treeTraversal(Node * node);
+	void askQuestion(Node * node, bool &bWin);
 
-	// update text file
-	void updateTxt();
+	// adds/swaps new answer and questions. 
+	void addNewAnswer(NewAnswer answer, Node * compAnswer, Node* previous);
 
 	//void printTree(Node * node);
 	

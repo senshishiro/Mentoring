@@ -9,65 +9,6 @@ QTree::QTree()
 	bModified = false;
 }
 
-// convertQuestionText
-// read questions from text file. store data into the a vector.
-vector<Qset> QTree::convertQuestionText()
-{
-	//ifstream questions("bigquestion.txt");
-	ifstream questions("question.txt");
-	string line;
-	vector <Qset> qStorage;
-	Qset dataSet;
-
-	if (questions.is_open())
-	{
-		while (getline(questions, line))
-		{
-			//@TODO convert to true/false for type?
-			if ((line.at(0) == 'A' || line.at(0) == 'Q') && line.at(1) == ':')
-			{
-				dataSet.type = line.at(0);
-			}
-			else
-			{
-				dataSet.data = line;
-			}
-
-			if (dataSet.type != "" && dataSet.data != "")
-			{
-				// add to vector when both type and data have been filled. Then reset the values.
-				qStorage.push_back(dataSet);
-				dataSet.type = "";
-				dataSet.data = "";
-			}
-		}
-		questions.close();
-	}
-	else
-	{
-		cout << "Unable to read file\n";
-	}
-
-	return qStorage;
-}
-
-// importQuestions
-// populate tree with questions from vector
-void QTree::importQuestions()
-{
-	cout << "Loading Questions...";
-	vector<Qset> questions = convertQuestionText();
-
-	// count is used to advance the questions in the vector
-	unsigned int count = 0;
-
-	cout << "Done. " << questions.size() << " questions loaded.\n" << "Building Tree...";
-
-	// build question tree
-	insertNode(root, questions, count);
-
-	cout << "Done. Nodes created : " << count << "\n";
-}
 
 // createNode
 Node * QTree::createNode(Node * n, string data, bool type)
@@ -77,20 +18,18 @@ Node * QTree::createNode(Node * n, string data, bool type)
 	n->data = data;
 	n->right = NULL;
 	n->left = NULL;
-	//cout << data << endl;
 	return n;
 }
 
 // insertNode
 // creates node based on if it's a question or answer.
-Node* QTree::insertNode(Node * &n, vector<Qset> &questions, unsigned int &count)
+void QTree::insertNode(Node * &n, vector<Qset> &questions, unsigned int &count)
 {
 	// base case - add answer node
 	if (n == NULL && questions[count].type == "A")
 	{
 		n = createNode(n, questions[count].data, false);
-		count++;
-		return n;			
+		count++;		
 	}
 	// add question node
 	else if (n == NULL && questions[count].type == "Q")
@@ -109,7 +48,6 @@ Node* QTree::insertNode(Node * &n, vector<Qset> &questions, unsigned int &count)
 	else
 	{
 		cerr << "Nothing to Add.\n";
-		return n;
 	}
 }
 
@@ -120,35 +58,28 @@ Node* QTree::insertNode(Node * &n, vector<Qset> &questions, unsigned int &count)
 
 // treeTraversal
 // calls askQuestion
-void QTree::treeTraversal(Node * n)
+void QTree::askQuestion(Node * n, bool &bWin)
 {
-	askQuestion(n, NULL);
+	treeTraversal(n, NULL, bWin);
 }
 
 // askQuestion
 // traverses the tree based on yes no input
-Node* QTree::askQuestion(Node * n, Node * previous)
+Node* QTree::treeTraversal(Node * n, Node * previous, bool &bWin)
 {
 	if (n->isQuestion == false)
 	{
 		cout << "Are you thinking of: "<< n->data << "?\n";
 
-		if (getInput())
+		if (Inputs::getInput())
 		{
-			cout << "Computer Wins!\n";
+			bWin = false;
 		}
 		else
-		{
-			cout << "You Win!\n";
-
-			// ask player if they want to add a new answer/question
-			cout << "Would you like to add your object to list?\n";
-
-			if (getInput())
-			{
-				addNewAnswer(n, previous);
-				bModified = true;
-			}
+		{	
+			bWin = true;
+			lastAnswer = n;
+			previousToLastAnswer = previous;		
 		}
 		return n;
 	}
@@ -156,13 +87,13 @@ Node* QTree::askQuestion(Node * n, Node * previous)
 	{
 		cout << "Q: " << n->data << endl;
 
-		if (getInput())
+		if (Inputs::getInput())
 		{
-			askQuestion(n->right, n);
+			treeTraversal(n->right, n, bWin);
 		}
 		else
 		{
-			askQuestion(n->left, n);
+			treeTraversal(n->left, n, bWin);
 		}
 	}
 }
@@ -170,69 +101,19 @@ Node* QTree::askQuestion(Node * n, Node * previous)
 
 // addNewAnswer()
 // ask the player for a answer and question. Updates the tree and text file
-void QTree::addNewAnswer(Node * compAnswer, Node * previous)
+void QTree::addNewAnswer(NewAnswer answerData, Node * compAnswer, Node * previous)
 {
-	string newAnswer;
-	string newQuestion;
-	bool yesno;
-	bool verify = false;
-
 	Node * question;
 	Node * answer;
-	
-	do 
-	{
-		// get new answer from player
-		cout << "What were you thinking of?\n";
-		cout << "Answer:";
-		newAnswer = getData();
-
-		// get new question from player
-		cout << "Please enter a yes no question that differentiates your object from the computer's object?\n";
-		cout << "Question:";
-		newQuestion = getData();
-
-		// get new question from player
-		cout << "What is the answer to the your question a yes or no?\n";
-		yesno = getInput();
-
-		// verify
-		cout << "---------------------------------------------\n";
-		cout << "Computer's answer: " << compAnswer->data << endl;
-		cout << "Object: " << newAnswer << endl;
-		cout << "Question: " << newQuestion << endl;
-		cout << "Answer: ";
-
-		if (yesno)
-		{
-			cout << "yes\n";
-		}
-		else
-		{
-			cout << "no\n";
-		}
-
-		cout << "Does this info look correct?\n";
-		verify = getInput();
-
-		if (!verify)
-		{
-			newAnswer = "";
-			newQuestion = "";
-			yesno = false;
-		}
-	
-	} while (!verify);
-
-
-
+		
 	// create answer node
-	answer = createNode(NULL, newAnswer, false);
+	answer = createNode(NULL, answerData.obj, false);
 
 	// create question node
-	question = createNode(NULL, newQuestion, true);
+	question = createNode(NULL, answerData.question, true);
 
-	if (yesno)
+	// determine if it goes left or right
+	if (answerData.leftRight)
 	{
 		question->left = compAnswer;
 		question->right = answer;
@@ -253,120 +134,17 @@ void QTree::addNewAnswer(Node * compAnswer, Node * previous)
 	{
 		previous->right = question;
 	}
-
-	cout << "Thank You! Your question and answer has been added.\n";
 }
 
 
-//----------------------------------------------------------------
-// input functions
-
-// toLowercase
-// converts a string to all lowercase
-string QTree::toLowercase(string strText)
+bool QTree::isModified()
 {
-	for (int i = 0; i < strText.length(); i++)
-	{
-		strText[i] = tolower(strText[i]);
-	}
-
-	return strText;
+	return bModified;
 }
 
-// getData()
-// get input for adding a new querstion and answer node.
-string QTree::getData()
+void  QTree::updateModified(bool value)
 {
-	string data = "";
-	do 
-	{
-		getline(cin, data);
-
-	} while (data == "" || data == " ");
-	
-	return data;
-}
-
-
-// getInput
-// gets yes or no from the player
-bool QTree::getInput()
-{
-	bool valid = false;
-	bool isYes = true;
-	string input;
-
-	do
-	{
-		cout << "Enter(y/n): ";
-		cin >> input;
-
-		input = toLowercase(input);
-
-		if (input == "yes" || input == "y")
-		{
-			isYes = true;
-			valid = true;
-		}
-		else if (input == "no" || input == "n")
-		{
-			isYes = false;
-			valid = true;
-		}
-		else
-		{
-			cout << "Please enter yes or no.\n";
-		}
-	} while (!valid);
-
-	return isYes;
-}
-
-//Asks player if they want to exit
-bool QTree::playAgain()
-{
-	cout << "Would you like to play again?\n";
-	return getInput();
-}
-
-//-----------------------------------------------
-// updateTxt()
-// Dumps all of the trees contents into a text file
-
-void QTree::updateTxt()
-{
-	fstream txtFile("question.txt");
-
-	if (txtFile.is_open())
-	{
-		printToTxt(txtFile, root);
-		txtFile.close();
-		//cout << "text file updated\n";
-	}
-	else
-	{
-		cerr << "Cannot access file. Unable to save updates from this session!\n";
-	}
-}
-
-void QTree::printToTxt(fstream &stream, Node * node)
-{
-	if (node == NULL)
-		return;
-
-	if (node->isQuestion)
-	{
-		stream << "Q:\n";
-	}
-	else
-	{
-		stream << "A:\n";
-	}
-
-	stream << node->data << endl;
-
-	printToTxt(stream, node->right);
-	printToTxt(stream, node->left);
+	bModified = value;
 }
 
 /*

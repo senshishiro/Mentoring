@@ -32,6 +32,9 @@
     <ClInclude Include="controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inputs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -44,6 +47,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inputs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

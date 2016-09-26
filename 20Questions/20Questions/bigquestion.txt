@@ -8098,8 +8098,12 @@ Q:
 Does it use a ship?
 A:
 Space Pirate
+Q:
+Does it have wings?
 A:
 plane
+A:
+helicopter
 Q:
 Is it named after a small insect and a maned mammal?
 A:
