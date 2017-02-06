@@ -20,7 +20,9 @@ int main()
 
 	cout << endl;
 
-	test.printAdjList("B");
+	//test.printAdjList("B");
+	//test.shortestPath("A", "C");
+	test.pathExist("A", "D");
     return 0;
 }
 

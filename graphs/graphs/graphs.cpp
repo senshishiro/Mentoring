@@ -57,29 +57,150 @@ void Graph::addEdge(string source, string dest, int weight)
 	//cout << sourceNode->name << " " << destNode->name << " " << sourceNode->adjList[destNode] << endl;
 }
 
-//printEdgeList
 
-void Graph::dijkstra(string source, string dest)
+// DFS
+// Searches 
+
+
+void Graph::pathExist(string source, string dest)
 {
-	//initialize
-	map<Node*, int> unvisted;
-	map<Node*, int> visted;
-	Node * sourceNode;
+	Node* temp = NULL;
+	Node* sourceNode = NULL;
+	Node* destNode = NULL;
+	map<Node*, bool> visited;
 
 	for (int i = 0; i < vertList.size(); i++)
 	{
-		//grab pointer for source node
+		//load unvisted with pointers and weights
+		visited[vertList[i]] = false;
+
 		if (vertList[i]->name == source)
 		{
 			sourceNode = vertList[i];
 		}
-		else
+
+		if (vertList[i]->name == dest)
 		{
-			//load unvisted with pointers and weights
-			unvisted[vertList[i]] = INF;
+			destNode = vertList[i];
 		}
 	}
+
+	dfs(sourceNode, destNode, visited);
 	
+}
+
+void Graph::dfs(Node* n, Node* &dest, map<Node*, bool> &visited)
+{
+	visited[n] = true;
+	cout << n->name << endl;
+	if (n->name == dest->name)
+	{
+		cout << "Path Exists\n";
+	}
+	else
+	{
+		for (const auto& x : n->adjList)
+		{
+			if (!visited[x.first])
+			{
+				dfs(x.first, dest, visited);
+			}
+		}
+	}
+}
+
+
+// shortestPath
+void Graph::shortestPath(string source, string dest)
+{
+	//initialize
+	map<Node*, int> vertices;
+	map<Node*, bool> visited;
+	vector<pair<Node*, int>> queue;
+
+	Node * sourceNode = NULL;
+	Node * destNode = NULL;
+
+	//initialize maps and nodes
+	for (int i = 0; i < vertList.size(); i++)
+	{
+		//load unvisted with pointers and weights
+		vertices[vertList[i]] = INF;
+		visited[vertList[i]] = false;
+
+		if (vertList[i]->name == source)
+		{
+			sourceNode = vertList[i];
+		}
+
+		if (vertList[i]->name == dest)
+		{
+			destNode = vertList[i];
+		}
+	}
+
+	queue.push_back(make_pair(sourceNode, 0));
+
+	// loops though the queue
+	while (!queue.empty())
+	{
+		Node* curr = queue.front().first;
+		int currWeight = queue.front().second;
+
+		Node* minNode = NULL;
+		queue.pop_back();
+
+		int minWeight = INF;
+
+		//cout << "current node: " << curr->name << endl;
+
+		//cycle through all adj nodes
+		for (const auto& x : curr->adjList)
+		{
+			int adjWeight = x.second;
+			int tempDist = currWeight + adjWeight;
+
+			// check if 
+			if (visited[x.first] == false)
+			{
+				vertices[x.first] = tempDist;
+				//cout << "node: " << curr->name << " to adj node: " << x.first->name << " weight: " << tempDist << endl;
+				//cout << "min weight " << minWeight << endl;
+
+				if (tempDist < minWeight)
+				{
+					//cout << "min node is " << x.first->name << " with weight: " << tempDist << endl;
+					minNode = x.first;
+					minWeight = tempDist;				
+					vertices[x.first] = tempDist;
+					//cout << "min weight " << minWeight << endl;
+					//cout << "total weight at node " << x.first->name <<" is "<< vertices[x.first] << endl;			
+				}
+			}
+			else
+			{
+				cout << x.first->name << " has been visited\n";
+			}
+		}
+
+
+		if (minNode != NULL)
+		{
+			visited[curr] = true;
+			cout << vertices[minNode] << endl;
+			queue.push_back(make_pair(minNode, vertices[minNode]));
+		}
+	}
+
+	if (vertices[destNode] != INF)
+	{
+		cout << "Shortest Weight Path between " << source << " and " << dest << " is " << vertices[destNode] << endl;
+	}
+	else
+	{
+		cout << "Path from " << source << " to " << dest << " does not exist.\n";
+	}
+
 	//starting vertices
 	//remove source node
 	// set vertices weight to inf
@@ -93,10 +214,10 @@ void Graph::dijkstra(string source, string dest)
 	// find one with lowest weight
 	// add lowest weight vert to visted
 	// remove from source
-
 }
 
 
+//printEdgeList
 void Graph::printList()
 {
 	cout << "edges:\n";

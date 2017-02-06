@@ -31,10 +31,15 @@ class Graph
 
 	Node * getVert(string vert);
 	//addEdge
+
+
+	void dfs(Node* n, Node* &dest, map<Node*, bool> &visited);
+
 public:
 	void addEdge(string source, string dest, int weight);
-	void Graph::dijkstra(string source, string dest);
+	void Graph::shortestPath(string source, string dest);
 	void printList();
 	void printAdjList(string vertex);
+	void pathExist(string source, string dest);
 
 };
