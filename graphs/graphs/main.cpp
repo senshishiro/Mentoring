@@ -16,12 +16,13 @@ int main()
 	test.addEdge("B", "A", 2);
 	test.addEdge("C", "D", 4);
 
-	test.printList();
-
+	//test.printList();
+	test.printEdges();
 	cout << endl;
 
 	//test.printAdjList("B");
-	//test.shortestPath("A", "C");
+	test.findShortestPath("D", "C");
+	cout << endl;
 	test.pathExist("A", "D");
     return 0;
 }

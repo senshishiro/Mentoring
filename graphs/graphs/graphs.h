@@ -15,14 +15,14 @@ struct Node
 {
 public:
 	string name;
-	map<Node*, int> adjList;
+	//map<Node*, int> adjList;
 	//neighbors
 };
 
 class Graph
 {
 	vector <Node*> vertList;
-	vector<pair<Node*,int>> edgeList;
+	map <Node*, vector<pair<Node*,int>>> edgeList;
 	
 	//infinity constant for dijkstra
 	const int INF = 999999;
@@ -30,16 +30,14 @@ class Graph
 	Node * addVertex(string vertName);
 
 	Node * getVert(string vert);
-	//addEdge
-
-
-	void dfs(Node* n, Node* &dest, map<Node*, bool> &visited);
+	int getWeight(Node* n);
+	bool dfs(Node* n, Node* &dest, map<Node*, bool> &visited);
+	vector<Node*> shortestPath(Node* &source, Node* &dest, map<Node*, int> &mapWeight);
 
 public:
 	void addEdge(string source, string dest, int weight);
-	void Graph::shortestPath(string source, string dest);
-	void printList();
-	void printAdjList(string vertex);
+	
+	void findShortestPath(string source, string dest);
 	void pathExist(string source, string dest);
-
+	void printEdges();
 };

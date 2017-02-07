@@ -31,6 +31,18 @@ Node * Graph::getVert(string vertName)
 	}
 }
 
+
+int Graph::getWeight(Node* n)
+{
+	for (int i = 0; i < edgeList[n].size(); ++i)
+	{
+		if (edgeList[n][i].first == n)
+		{
+			return edgeList[n][i].second;
+		}
+	}
+}
+
 //addEdge
 void Graph::addEdge(string source, string dest, int weight)
 {
@@ -53,199 +65,202 @@ void Graph::addEdge(string source, string dest, int weight)
 		vertList.push_back(destNode);
 	}
 	//add to node's adj list
-	sourceNode->adjList[destNode] = weight;
+	//sourceNode->adjList[destNode] = weight;
+	edgeList[sourceNode].push_back(make_pair(destNode,weight));
 	//cout << sourceNode->name << " " << destNode->name << " " << sourceNode->adjList[destNode] << endl;
 }
 
 
-// DFS
-// Searches 
-
+// pathExist
+// Checks if a path exists between two nodes
 
 void Graph::pathExist(string source, string dest)
 {
-	Node* temp = NULL;
-	Node* sourceNode = NULL;
-	Node* destNode = NULL;
+	Node* sourceNode = getVert(source);
+	Node* destNode = getVert(dest);
 	map<Node*, bool> visited;
-
+	
+	// set all values in the map to false
 	for (int i = 0; i < vertList.size(); i++)
 	{
 		//load unvisted with pointers and weights
 		visited[vertList[i]] = false;
-
-		if (vertList[i]->name == source)
-		{
-			sourceNode = vertList[i];
-		}
-
-		if (vertList[i]->name == dest)
-		{
-			destNode = vertList[i];
-		}
 	}
 
-	dfs(sourceNode, destNode, visited);
-	
-}
-
-void Graph::dfs(Node* n, Node* &dest, map<Node*, bool> &visited)
-{
-	visited[n] = true;
-	cout << n->name << endl;
-	if (n->name == dest->name)
+	// recursively searches through the graph looking for the dest node.
+	if(dfs(sourceNode, destNode, visited))
 	{
-		cout << "Path Exists\n";
+		cout << "A path exists between " << source << " and " << dest << endl;
 	}
 	else
 	{
-		for (const auto& x : n->adjList)
+		cout << "A path does not exists between " << source << " and " << dest << endl;
+	}
+	
+}
+
+// dfs
+// recursively searches through each node in the graph from source to dest
+bool Graph::dfs(Node* n, Node* &dest, map<Node*, bool> &visited)
+{
+	visited[n] = true;
+	vector<pair<Node*, int>> AdjList = edgeList[n];
+
+	if (n->name == dest->name)
+	{
+		return true;
+	}
+	else
+	{
+		for (int i = 0; i < AdjList.size(); ++i)
 		{
-			if (!visited[x.first])
+			// check if node has been visited
+			if (!visited[AdjList[i].first])
 			{
-				dfs(x.first, dest, visited);
+				if (dfs(AdjList[i].first, dest, visited))
+				{
+					return true;
+				}
 			}
 		}
+		return false;
 	}
 }
 
-
-// shortestPath
-void Graph::shortestPath(string source, string dest)
+void Graph::findShortestPath(string source, string dest)
 {
-	//initialize
-	map<Node*, int> vertices;
-	map<Node*, bool> visited;
-	vector<pair<Node*, int>> queue;
+	Node* sourceNode = getVert(source);
+	Node* destNode = getVert(dest);
+	map<Node*, int> mapVertWeight;
+	vector<Node*> results;
 
-	Node * sourceNode = NULL;
-	Node * destNode = NULL;
+	results = shortestPath(sourceNode, destNode, mapVertWeight);
 
-	//initialize maps and nodes
-	for (int i = 0; i < vertList.size(); i++)
+	// Checks if the last node is still set at INF
+	if (mapVertWeight[destNode] != INF)
 	{
-		//load unvisted with pointers and weights
-		vertices[vertList[i]] = INF;
-		visited[vertList[i]] = false;
-
-		if (vertList[i]->name == source)
+		cout << "Shortest Path Weight between " << source << " and " << dest << " is " << mapVertWeight[destNode] << endl;
+	
+		//cout << "size: " << results.size() << endl;
+		for (int i = 0; i < results.size(); i++)
 		{
-			sourceNode = vertList[i];
-		}
-
-		if (vertList[i]->name == dest)
-		{
-			destNode = vertList[i];
-		}
-	}
-
-	queue.push_back(make_pair(sourceNode, 0));
-
-	// loops though the queue
-	while (!queue.empty())
-	{
-		Node* curr = queue.front().first;
-		int currWeight = queue.front().second;
-
-		Node* minNode = NULL;
-		queue.pop_back();
-
-		int minWeight = INF;
-
-		//cout << "current node: " << curr->name << endl;
-
-		//cycle through all adj nodes
-		for (const auto& x : curr->adjList)
-		{
-			int adjWeight = x.second;
-			int tempDist = currWeight + adjWeight;
-
-			// check if 
-			if (visited[x.first] == false)
-			{
-				vertices[x.first] = tempDist;
-				//cout << "node: " << curr->name << " to adj node: " << x.first->name << " weight: " << tempDist << endl;
-				//cout << "min weight " << minWeight << endl;
-
-				if (tempDist < minWeight)
-				{
-					//cout << "min node is " << x.first->name << " with weight: " << tempDist << endl;
-					minNode = x.first;
-					minWeight = tempDist;				
-					vertices[x.first] = tempDist;
-					//cout << "min weight " << minWeight << endl;
-					//cout << "total weight at node " << x.first->name <<" is "<< vertices[x.first] << endl;			
-				}
-			}
+			cout << results[i]->name;
+			//cout << edgeList[].
+			if (i < results.size()-1)
+				cout << "->";
 			else
-			{
-				cout << x.first->name << " has been visited\n";
-			}
+				cout << endl;
 		}
-
-
-		if (minNode != NULL)
-		{
-			visited[curr] = true;
-			cout << vertices[minNode] << endl;
-			queue.push_back(make_pair(minNode, vertices[minNode]));
-		}
-	}
-
-	if (vertices[destNode] != INF)
-	{
-		cout << "Shortest Weight Path between " << source << " and " << dest << " is " << vertices[destNode] << endl;
 	}
 	else
 	{
 		cout << "Path from " << source << " to " << dest << " does not exist.\n";
 	}
-
-	//starting vertices
-	//remove source node
-	// set vertices weight to inf
-
-	//visted vertices
-	//add source node. set weight to 0
-
-	// loop until current node == dest node
-	//from source node loop through all adj verts.
-	// update weight on adj verts if they're lower than inf
-	// find one with lowest weight
-	// add lowest weight vert to visted
-	// remove from source
 }
 
-
-//printEdgeList
-void Graph::printList()
+// shortestPath
+vector<Node*> Graph::shortestPath(Node* &sourceNode, Node* &destNode, map<Node*, int> &mapVertWeight)
 {
-	cout << "edges:\n";
+	//initialize
+	
+	map<Node*, bool> mapVisited;
+	vector<pair<Node*, int>> queue;
+	vector<Node*> prev;
+
+	//results.push_back(sourceNode);
+
+	//initialize maps and nodes
 	for (int i = 0; i < vertList.size(); i++)
 	{
-		map<Node*, int> neighbors;
-		neighbors = vertList[i]->adjList;
+		//load unvisted with pointers and weights
+		mapVertWeight[vertList[i]] = INF;
+		mapVisited[vertList[i]] = false;
+	}
 
-		for (auto key = neighbors.cbegin(); key != neighbors.cend(); key++)
+	// add sourceNode to queue
+	queue.push_back(make_pair(sourceNode, 0));
+	mapVertWeight[sourceNode] = 0;
+
+	// loops though the queue
+	while (!queue.empty())
+	{
+		Node* currNode = queue.front().first;
+		int currWeight = queue.front().second;
+		Node* minNode = NULL;
+		int minWeight = INF;
+		vector<pair<Node*, int>> AdjList = edgeList[currNode];
+
+		// remove node from queue
+		queue.pop_back();
+		
+		//cycle through all adj nodes
+		for (const auto& x : AdjList)
 		{
-			cout << vertList[i]->name << " " << (key->first)->name << " " << (key->second) << endl;
+			int adjWeight = x.second;
+			//int tempDist = currWeight + adjWeight;
+
+			// check if adj node has been visited
+			if (mapVisited[x.first] == false)
+			{
+				//mapVertWeight[x.first] = tempDist;
+
+				// keeps track of the node with the smallest weight
+
+				//if (tempDist < minWeight)
+				if(mapVertWeight[x.first] > mapVertWeight[currNode]+adjWeight)
+				{
+					//minNode = x.first;
+					//minWeight = tempDist;		
+
+					// update map with the total weight for each node
+					mapVertWeight[x.first] = mapVertWeight[currNode] + adjWeight;
+
+					if (mapVertWeight[x.first] < minWeight)
+					{
+						minNode = x.first;
+						minWeight = mapVertWeight[x.first];
+					  //mapVisited[currNode] = true;
+				    	//	prev.push_back
+						if (minNode == destNode)
+							break;
+
+					}
+
+					//mapVertWeight[x.first] = mapVertWeight[currNode] + adjWeight;
+					//queue.push_back(make_pair(minNode, mapVertWeight[minNode]));
+				}
+			}
+		}
+
+		// if a min node still exists continue looking at adjNodes
+		
+		if (minNode != NULL)
+		{
+			//cout << edgeList[currNode][0].second << " " << minWeight << endl;
+			mapVisited[currNode] = true;
+			prev.push_back(currNode);
+			queue.push_back(make_pair(minNode, mapVertWeight[minNode]));
+		}
+		else if (currNode == destNode)
+		{
+			prev.push_back(currNode);
 		}
 	}
+	
+	return prev;
+
 }
 
-//printAdljList
 
-void Graph::printAdjList(string vertex)
+//printEdges
+void Graph::printEdges()
 {
-
-	Node * source = getVert(vertex);
-
-	map<Node*, int> neighbors;
-	neighbors = source->adjList;
-
-	for (auto key = neighbors.cbegin(); key != neighbors.cend(); key++)
+	cout << "edges:\n";
+	for (const auto& n : edgeList)
 	{
-	cout << source->name << " " << (key->first)->name << " " << (key->second) << endl;
+		for (int i = 0; i < n.second.size(); ++i)
+		{
+			cout << n.first->name << " " << (n.second[i].first)->name << " : " << n.second[i].second << endl;
+		}
 	}
-
 }
