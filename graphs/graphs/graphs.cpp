@@ -11,7 +11,7 @@ Node * Graph::addVertex(string vertName)
 	return n;
 }
 
-
+// Look for vert in the vert list
 Node * Graph::getVert(string vertName)
 {
 	if (vertList.size() == 0)

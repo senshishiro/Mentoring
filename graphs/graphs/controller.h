@@ -1,12 +1,21 @@
 #pragma once
+#include <fstream>
+#include <sstream>
+#include "graphs.h"
 
 
-class graphController
+class GraphController
 {
-	//check for cycle
+	Graph gController;
+	const string TEXTPATH = "edges.txt";
+	
+	//void textToGraph();
 
-	// find min weight between two path
 
+public:
+	void textToGraph();
+	void printEdges();
+	void findShortPath(string source, string dest);
 };
 
 
