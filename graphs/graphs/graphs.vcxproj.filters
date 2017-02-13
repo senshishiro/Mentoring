@@ -24,9 +24,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="controller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="graphs.h">
       <Filter>Header Files</Filter>
     </ClInclude>

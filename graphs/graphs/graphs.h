@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -19,6 +20,16 @@ public:
 	//neighbors
 };
 
+
+class Comparator
+{
+public:
+	bool operator ()(pair<Node*, int> &p1, pair<Node*, int> &p2)
+	{
+		return p1.second > p2.second;
+	}
+};
+
 class Graph
 {
 	vector <Node*> vertList;
@@ -28,16 +39,15 @@ class Graph
 	const int INF = 999999;
 
 	Node * addVertex(string vertName);
-
 	Node * getVert(string vert);
+
 	int getWeight(Node* n);
 	bool dfs(Node* n, Node* &dest, map<Node*, bool> &visited);
-	vector<Node*> shortestPath(Node* &source, Node* &dest, map<Node*, int> &mapWeight);
+	void shortestPath(Node* &source, Node* &dest, map<Node*, int> &mapWeight);
 
 public:
 	void addEdge(string source, string dest, int weight);
-	
 	void findShortestPath(string source, string dest);
-	void pathExist(string source, string dest);
+	bool pathExist(string source, string dest);
 	void printEdges();
 };
